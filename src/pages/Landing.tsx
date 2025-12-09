@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useNavigate } from "react-router";
 import { CartDrawer } from "@/components/CartDrawer";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Landing() {
   const products = useQuery(api.products.list);
@@ -16,6 +17,7 @@ export default function Landing() {
   const cart = useQuery(api.cart.get);
   const navigate = useNavigate();
   const [cartOpen, setCartOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     seedProducts();
@@ -53,9 +55,23 @@ export default function Landing() {
             </Button>
             <ConnectButton 
               showBalance={false}
-              accountStatus="address"
-              chainStatus="icon"
+              accountStatus="avatar"
+              chainStatus="none"
             />
+            {isAuthenticated ? (
+              <Button
+                variant="outline"
+                onClick={() => navigate("/profile")}
+              >
+                Profile
+              </Button>
+            ) : (
+              <Button
+                onClick={() => navigate("/auth")}
+              >
+                Sign In
+              </Button>
+            )}
           </div>
         </div>
       </nav>

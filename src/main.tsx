@@ -18,6 +18,7 @@ import "./types/global.d.ts";
 const Landing = lazy(() => import("./pages/Landing.tsx"));
 const AuthPage = lazy(() => import("./pages/Auth.tsx"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail.tsx"));
+const Profile = lazy(() => import("./pages/Profile.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 // Simple loading fallback for route transitions
@@ -71,6 +72,7 @@ createRoot(document.getElementById("root")!).render(
                     <Route path="/" element={<Landing />} />
                     <Route path="/auth" element={<AuthPage redirectAfterAuth="/" />} />
                     <Route path="/product/:id" element={<ProductDetail />} />
+                    <Route path="/profile" element={<Profile />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
