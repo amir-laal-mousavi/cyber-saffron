@@ -263,7 +263,7 @@ export function CheckoutDialog({
                 </p>
               )}
             </div>
-            <DialogFooter className="flex-col gap-2">
+            <DialogFooter className="flex flex-col gap-2 sm:flex-col">
               <Button
                 onClick={handlePayment}
                 disabled={!isConnected || isSending || isConfirming}
