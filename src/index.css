@@ -151,23 +151,14 @@
     font-family: inherit !important;
   }
   
-  [data-rk] button[data-testid="rk-connect-button"] {
-    background: oklch(0.6 0.2 20) !important;
-    color: oklch(0.98 0 0) !important;
-    border-radius: 0.5rem !important;
-    font-weight: 500 !important;
-    transition: all 0.2s !important;
-    padding: 0.5rem 1rem !important;
-    height: 2.25rem !important;
-    border: none !important;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
+  /* RainbowKit button styling */
+  [data-rk] button {
+    font-family: inherit !important;
+    height: auto !important;
+    min-height: 2.25rem !important;
   }
   
-  [data-rk] button[data-testid="rk-connect-button"]:hover {
-    background: oklch(0.55 0.2 20) !important;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
-  }
-  
+  [data-rk] button[data-testid="rk-connect-button"],
   [data-rk] button[data-testid="rk-account-button"] {
     background: oklch(0.6 0.2 20) !important;
     color: oklch(0.98 0 0) !important;
@@ -175,13 +166,31 @@
     font-weight: 500 !important;
     transition: all 0.2s !important;
     padding: 0.5rem 1rem !important;
-    height: 2.25rem !important;
     border: none !important;
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
   }
   
+  [data-rk] button[data-testid="rk-connect-button"]:hover,
   [data-rk] button[data-testid="rk-account-button"]:hover {
     background: oklch(0.55 0.2 20) !important;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
+  }
+  
+  /* Fix for wallet icon and text alignment */
+  [data-rk] button img,
+  [data-rk] button svg {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+    flex-shrink: 0 !important;
+  }
+  
+  [data-rk] button > div {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
   }
 }
