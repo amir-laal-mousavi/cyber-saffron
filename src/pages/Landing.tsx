@@ -80,7 +80,7 @@ export default function Landing() {
                   alt="Cyber Saffron Box"
                   className="aspect-square overflow-hidden rounded-xl object-cover object-center"
                   height="550"
-                  src="https://harmless-tapir-303.convex.cloud/api/storage/8b1fca36-0300-4b54-a4f2-f29abd5e0fe4"
+                  src="https://images.unsplash.com/photo-1599909533730-f9d5b1c6e185?w=800&q=80"
                   width="550"
                 />
                 <div className="absolute -bottom-6 -left-6 bg-background/90 backdrop-blur border border-border p-4 rounded-lg shadow-lg hidden md:block">
