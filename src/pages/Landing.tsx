@@ -145,16 +145,16 @@ export default function Landing() {
       </section>
 
       {/* Products Section */}
-      <section id="products" className="py-16 md:py-24 bg-muted/30">
+      <section id="products" className="py-12 md:py-16 bg-muted/30">
         <div className="container px-4 md:px-8 mx-auto">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">The Collection</h2>
-            <p className="max-w-[700px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+          <div className="flex flex-col items-center justify-center space-y-3 text-center mb-8">
+            <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl md:text-4xl">The Collection</h2>
+            <p className="max-w-[600px] text-muted-foreground text-sm md:text-base">
               Choose your tier of exclusivity. Each package comes with a digital twin.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {products ? (
               products.map((product, index) => (
                 <motion.div
@@ -165,7 +165,7 @@ export default function Landing() {
                   viewport={{ once: true }}
                 >
                   <Card className="h-full flex flex-col overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 group cursor-pointer">
-                    <div className="aspect-square overflow-hidden relative bg-muted" onClick={() => navigate(`/product/${product._id}`)}>
+                    <div className="aspect-[4/3] overflow-hidden relative bg-muted" onClick={() => navigate(`/product/${product._id}`)}>
                       <img 
                         src={product.image} 
                         alt={product.name}
@@ -175,31 +175,31 @@ export default function Landing() {
                         <Badge className="bg-background/80 backdrop-blur text-foreground border-border">{product.tier}</Badge>
                       </div>
                     </div>
-                    <CardHeader onClick={() => navigate(`/product/${product._id}`)}>
-                      <CardTitle className="flex justify-between items-start">
+                    <CardHeader onClick={() => navigate(`/product/${product._id}`)} className="pb-3">
+                      <CardTitle className="flex justify-between items-start text-base">
                         <span>{product.name}</span>
                       </CardTitle>
-                      <CardDescription className="font-mono text-primary">{product.weight}</CardDescription>
+                      <CardDescription className="font-mono text-primary text-xs">{product.weight}</CardDescription>
                     </CardHeader>
-                    <CardContent className="flex-1" onClick={() => navigate(`/product/${product._id}`)}>
-                      <p className="text-sm text-muted-foreground mb-4">{product.description}</p>
-                      <ul className="space-y-2 text-sm">
-                        {product.features.map((feature, i) => (
-                          <li key={i} className="flex items-center gap-2">
-                            <CheckCircle className="h-3 w-3 text-secondary" />
-                            <span>{feature}</span>
+                    <CardContent className="flex-1 py-3" onClick={() => navigate(`/product/${product._id}`)}> 
+                      <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{product.description}</p>
+                      <ul className="space-y-1.5 text-xs">
+                        {product.features.slice(0, 2).map((feature, i) => (
+                          <li key={i} className="flex items-center gap-1.5">
+                            <CheckCircle className="h-3 w-3 text-secondary shrink-0" />
+                            <span className="line-clamp-1">{feature}</span>
                           </li>
                         ))}
                       </ul>
                     </CardContent>
-                    <CardFooter className="flex flex-col gap-4 border-t bg-muted/20 p-6">
+                    <CardFooter className="flex flex-col gap-3 border-t bg-muted/20 p-4">
                       <div className="flex items-center justify-between w-full">
                         <div className="flex flex-col">
-                          <span className="text-2xl font-bold font-mono">${product.priceUsd}</span>
-                          <span className="text-xs text-muted-foreground font-mono">{product.priceEth} ETH</span>
+                          <span className="text-xl font-bold font-mono">${product.priceUsd}</span>
+                          <span className="text-[10px] text-muted-foreground font-mono">{product.priceEth} ETH</span>
                         </div>
-                        <Button className="bg-primary hover:bg-primary/90" onClick={() => navigate(`/product/${product._id}`)}>
-                          View Details
+                        <Button size="sm" className="bg-primary hover:bg-primary/90" onClick={() => navigate(`/product/${product._id}`)}>
+                          View
                         </Button>
                       </div>
                     </CardFooter>
@@ -208,7 +208,7 @@ export default function Landing() {
               ))
             ) : (
               Array.from({ length: 3 }).map((_, i) => (
-                <Card key={i} className="h-[500px] animate-pulse bg-muted/50" />
+                <Card key={i} className="h-[400px] animate-pulse bg-muted/50" />
               ))
             )}
           </div>
