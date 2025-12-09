@@ -29,7 +29,7 @@ export default function Landing() {
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
       {/* Navigation */}
       <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between px-4 md:px-8">
+        <div className="container flex h-16 items-center justify-between px-4 md:px-8 mx-auto">
           <a href="/" className="flex items-center gap-2 font-bold text-xl tracking-tighter hover:opacity-80 transition-opacity cursor-pointer">
             <Hexagon className="h-6 w-6 text-primary fill-primary/20 shrink-0" />
             <span className="hidden sm:inline">CYBER SAFFRON</span>
@@ -81,7 +81,7 @@ export default function Landing() {
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
         <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-primary/20 opacity-20 blur-[100px]"></div>
         
-        <div className="container px-4 md:px-8">
+        <div className="container px-4 md:px-8 mx-auto">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
@@ -142,7 +142,7 @@ export default function Landing() {
 
       {/* Products Section */}
       <section id="products" className="py-16 md:py-24 bg-muted/30">
-        <div className="container px-4 md:px-8">
+        <div className="container px-4 md:px-8 mx-auto">
           <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">The Collection</h2>
             <p className="max-w-[700px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
@@ -214,7 +214,7 @@ export default function Landing() {
       {/* Features Section */}
       <section id="features" className="py-16 md:py-24 relative overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-secondary/10 via-background to-background"></div>
-        <div className="container px-4 md:px-8">
+        <div className="container px-4 md:px-8 mx-auto">
           <div className="flex flex-col items-center justify-center space-y-4 text-center mb-16">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Transparent Process</h2>
             <p className="max-w-[600px] text-muted-foreground">
@@ -254,7 +254,7 @@ export default function Landing() {
 
       {/* Trust Section */}
       <section id="trust" className="py-16 border-t border-border/50">
-        <div className="container px-4 md:px-8">
+        <div className="container px-4 md:px-8 mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="text-center md:text-left">
               <h3 className="text-2xl font-bold mb-2">Trusted & Verified</h3>
@@ -280,7 +280,7 @@ export default function Landing() {
 
       {/* Footer */}
       <footer className="py-8 border-t border-border bg-muted/20">
-        <div className="container px-4 md:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="container px-4 md:px-8 flex flex-col md:flex-row justify-between items-center gap-4 mx-auto">
           <div className="flex items-center gap-2 font-bold">
             <Hexagon className="h-5 w-5 text-primary" />
             <span>CYBER SAFFRON</span>

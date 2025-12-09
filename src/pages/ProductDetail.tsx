@@ -77,7 +77,7 @@ export default function ProductDetail() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
-        <div className="container flex h-16 items-center px-4 md:px-8">
+        <div className="container flex h-16 items-center px-4 md:px-8 mx-auto">
           <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
@@ -86,7 +86,7 @@ export default function ProductDetail() {
       </header>
 
       {/* Product Detail */}
-      <div className="container px-4 md:px-8 py-12">
+      <div className="container px-4 md:px-8 py-12 mx-auto">
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Left: Image Gallery */}
           <motion.div

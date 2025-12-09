@@ -87,7 +87,7 @@ export default function Profile() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
-        <div className="container flex h-16 items-center px-4 md:px-8">
+        <div className="container flex h-16 items-center px-4 md:px-8 mx-auto">
           <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
@@ -96,7 +96,7 @@ export default function Profile() {
       </header>
 
       {/* Profile Content */}
-      <div className="container px-4 md:px-8 py-12 max-w-4xl">
+      <div className="container px-4 md:px-8 py-12 max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
