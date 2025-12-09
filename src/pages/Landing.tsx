@@ -21,20 +21,22 @@ export default function Landing() {
       {/* Navigation */}
       <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between px-4 md:px-8">
-          <div className="flex items-center gap-2 font-bold text-xl tracking-tighter">
-            <Hexagon className="h-6 w-6 text-primary fill-primary/20" />
-            <span>CYBER SAFFRON</span>
-          </div>
+          <a href="/" className="flex items-center gap-2 font-bold text-xl tracking-tighter hover:opacity-80 transition-opacity cursor-pointer">
+            <Hexagon className="h-6 w-6 text-primary fill-primary/20 shrink-0" />
+            <span className="hidden sm:inline">CYBER SAFFRON</span>
+          </a>
           <div className="hidden md:flex items-center gap-6 text-sm font-medium">
-            <a href="#products" className="hover:text-primary transition-colors">Collection</a>
-            <a href="#features" className="hover:text-primary transition-colors">Process</a>
-            <a href="#trust" className="hover:text-primary transition-colors">Trust</a>
+            <a href="#products" className="hover:text-primary transition-colors cursor-pointer">Collection</a>
+            <a href="#features" className="hover:text-primary transition-colors cursor-pointer">Process</a>
+            <a href="#trust" className="hover:text-primary transition-colors cursor-pointer">Trust</a>
           </div>
-          <ConnectButton 
-            showBalance={false}
-            accountStatus="address"
-            chainStatus="icon"
-          />
+          <div className="flex items-center">
+            <ConnectButton 
+              showBalance={false}
+              accountStatus="address"
+              chainStatus="icon"
+            />
+          </div>
         </div>
       </nav>
 
