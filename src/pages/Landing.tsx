@@ -145,9 +145,9 @@ export default function Landing() {
       </section>
 
       {/* Products Section */}
-      <section id="products" className="py-12 md:py-16 bg-muted/30">
+      <section id="products" className="py-8 md:py-10 bg-muted/30">
         <div className="container px-4 md:px-8 mx-auto">
-          <div className="flex flex-col items-center justify-center space-y-3 text-center mb-8">
+          <div className="flex flex-col items-center justify-center space-y-2 text-center mb-6">
             <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl md:text-4xl">The Collection</h2>
             <p className="max-w-[600px] text-muted-foreground text-sm md:text-base">
               Choose your tier of exclusivity. Each package comes with a digital twin.
@@ -165,7 +165,7 @@ export default function Landing() {
                   viewport={{ once: true }}
                 >
                   <Card className="h-full flex flex-col overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 group cursor-pointer">
-                    <div className="aspect-[4/3] overflow-hidden relative bg-muted" onClick={() => navigate(`/product/${product._id}`)}>
+                    <div className="aspect-[16/9] overflow-hidden relative bg-muted" onClick={() => navigate(`/product/${product._id}`)}>
                       <img 
                         src={product.image} 
                         alt={product.name}
@@ -175,15 +175,15 @@ export default function Landing() {
                         <Badge className="bg-background/80 backdrop-blur text-foreground border-border">{product.tier}</Badge>
                       </div>
                     </div>
-                    <CardHeader onClick={() => navigate(`/product/${product._id}`)} className="pb-2">
-                      <CardTitle className="flex justify-between items-start text-lg">
+                    <CardHeader onClick={() => navigate(`/product/${product._id}`)} className="pb-1.5 pt-3">
+                      <CardTitle className="flex justify-between items-start text-lg leading-tight">
                         <span>{product.name}</span>
                       </CardTitle>
                       <CardDescription className="font-mono text-primary text-xs mt-0.5">{product.weight}</CardDescription>
                     </CardHeader>
-                    <CardContent className="flex-1 py-2" onClick={() => navigate(`/product/${product._id}`)}> 
-                      <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{product.description}</p>
-                      <ul className="space-y-1.5 text-xs">
+                    <CardContent className="flex-1 py-1.5" onClick={() => navigate(`/product/${product._id}`)}> 
+                      <p className="text-xs text-muted-foreground mb-1.5 line-clamp-1">{product.description}</p>
+                      <ul className="space-y-1 text-xs">
                         {product.features.slice(0, 2).map((feature, i) => (
                           <li key={i} className="flex items-center gap-1.5">
                             <CheckCircle className="h-3 w-3 text-secondary shrink-0" />
@@ -192,7 +192,7 @@ export default function Landing() {
                         ))}
                       </ul>
                     </CardContent>
-                    <CardFooter className="flex flex-col gap-3 border-t bg-muted/20 p-4">
+                    <CardFooter className="flex flex-col gap-2 border-t bg-muted/20 p-3">
                       <div className="flex items-center justify-between w-full">
                         <div className="flex flex-col">
                           <span className="text-xl font-bold font-mono">${product.priceUsd}</span>
@@ -208,7 +208,7 @@ export default function Landing() {
               ))
             ) : (
               Array.from({ length: 3 }).map((_, i) => (
-                <Card key={i} className="h-[400px] animate-pulse bg-muted/50" />
+                <Card key={i} className="h-[320px] animate-pulse bg-muted/50" />
               ))
             )}
           </div>
