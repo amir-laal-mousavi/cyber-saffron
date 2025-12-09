@@ -17,6 +17,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
 import { Id } from "@/convex/_generated/dataModel";
+import { useAuth } from "@/hooks/use-auth";
 
 interface CheckoutDialogProps {
   open: boolean;
@@ -44,6 +45,7 @@ export function CheckoutDialog({
   totalUsd,
 }: CheckoutDialogProps) {
   const { address, isConnected } = useAccount();
+  const { user } = useAuth();
   const { sendTransaction, data: hash, isPending: isSending, error: txError } = useSendTransaction();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
   const createOrder = useMutation(api.orders.create);
@@ -108,6 +110,25 @@ export function CheckoutDialog({
   });
   const [step, setStep] = useState<"shipping" | "payment" | "success">("shipping");
 
+  // Initialize shipping info from user's billing address when dialog opens
+  useEffect(() => {
+    if (open && user?.billingAddress) {
+      setShippingInfo(user.billingAddress);
+      // Skip to payment if billing address exists
+      setStep("payment");
+    } else if (open && !user?.billingAddress) {
+      // Reset to shipping form if no billing address
+      setStep("shipping");
+      setShippingInfo({
+        name: "",
+        address: "",
+        city: "",
+        country: "",
+        postalCode: "",
+      });
+    }
+  }, [open, user?.billingAddress]);
+
   const handleShippingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isConnected) {
@@ -144,14 +165,20 @@ export function CheckoutDialog({
 
   const handleClose = () => {
     if (step === "success") {
-      setStep("shipping");
-      setShippingInfo({
-        name: "",
-        address: "",
-        city: "",
-        country: "",
-        postalCode: "",
-      });
+      // Reset to appropriate step based on billing address
+      if (user?.billingAddress) {
+        setStep("payment");
+        setShippingInfo(user.billingAddress);
+      } else {
+        setStep("shipping");
+        setShippingInfo({
+          name: "",
+          address: "",
+          city: "",
+          country: "",
+          postalCode: "",
+        });
+      }
     }
     onOpenChange(false);
   };
