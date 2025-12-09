@@ -180,6 +180,16 @@
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
   }
   
+  /* Make account button fully red when wallet is connected */
+  [data-rk] button[data-testid="rk-account-button"] > div {
+    background: oklch(0.6 0.2 20) !important;
+    color: oklch(0.98 0 0) !important;
+  }
+  
+  [data-rk] button[data-testid="rk-account-button"] * {
+    color: oklch(0.98 0 0) !important;
+  }
+  
   /* Fix for wallet icon and text alignment */
   [data-rk] button img,
   [data-rk] button svg {
