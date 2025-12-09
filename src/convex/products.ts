@@ -22,7 +22,7 @@ export const seed = mutation({
         tier: "Entry Level",
         priceEth: 0.05,
         priceUsd: 120,
-        image: "https://images.unsplash.com/photo-1599909533730-f9d5b1c6e185?w=800&q=80",
+        image: "https://images.unsplash.com/photo-1505253758473-96b7015fcd40?w=800&q=80",
         features: ["Standard blister pack", "Digital QR twin", "Blockchain verified"],
       },
       {
@@ -32,7 +32,7 @@ export const seed = mutation({
         tier: "Mid Tier",
         priceEth: 0.2,
         priceUsd: 450,
-        image: "https://images.unsplash.com/photo-1599909533730-f9d5b1c6e185?w=800&q=80",
+        image: "https://images.unsplash.com/photo-1596040033229-a0b3b83b2e4d?w=800&q=80",
         features: ["Luxury hard-shell box", "Velvet interior", "NFT access card"],
       },
       {
@@ -42,7 +42,7 @@ export const seed = mutation({
         tier: "High End",
         priceEth: 0.5,
         priceUsd: 1100,
-        image: "https://images.unsplash.com/photo-1599909533730-f9d5b1c6e185?w=800&q=80",
+        image: "https://images.unsplash.com/photo-1615485500834-bc10199bc768?w=800&q=80",
         features: ["Limited edition metal briefcase", "Embedded NFC chip", "Full traceability"],
       },
     ];
