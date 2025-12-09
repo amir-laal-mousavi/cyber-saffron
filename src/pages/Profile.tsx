@@ -24,6 +24,14 @@ export default function Profile() {
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editName, setEditName] = useState("");
+  const [billingDialogOpen, setBillingDialogOpen] = useState(false);
+  const [billingAddress, setBillingAddress] = useState({
+    name: "",
+    address: "",
+    city: "",
+    country: "",
+    postalCode: "",
+  });
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -34,6 +42,9 @@ export default function Profile() {
   useEffect(() => {
     if (user?.name) {
       setEditName(user.name);
+    }
+    if (user?.billingAddress) {
+      setBillingAddress(user.billingAddress);
     }
   }, [user]);
 
@@ -49,6 +60,17 @@ export default function Profile() {
       setEditDialogOpen(false);
     } catch (error) {
       toast.error("Failed to update profile");
+      console.error(error);
+    }
+  };
+
+  const handleSaveBillingAddress = async () => {
+    try {
+      await updateProfile({ billingAddress });
+      toast.success("Billing address updated successfully!");
+      setBillingDialogOpen(false);
+    } catch (error) {
+      toast.error("Failed to update billing address");
       console.error(error);
     }
   };
@@ -110,6 +132,45 @@ export default function Profile() {
                 </div>
               </div>
             </CardHeader>
+          </Card>
+
+          {/* Billing Address Card */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Package className="h-5 w-5" />
+                    Billing Address
+                  </CardTitle>
+                  <CardDescription>
+                    Manage your default billing and shipping address
+                  </CardDescription>
+                </div>
+                <Button variant="outline" size="icon" onClick={() => setBillingDialogOpen(true)}>
+                  <Edit className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {user.billingAddress ? (
+                <div className="bg-muted/50 rounded-lg p-4 space-y-1">
+                  <p className="font-medium">{user.billingAddress.name}</p>
+                  <p className="text-sm text-muted-foreground">{user.billingAddress.address}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {user.billingAddress.city}, {user.billingAddress.postalCode}
+                  </p>
+                  <p className="text-sm text-muted-foreground">{user.billingAddress.country}</p>
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <p className="text-sm text-muted-foreground mb-3">No billing address saved</p>
+                  <Button variant="outline" onClick={() => setBillingDialogOpen(true)}>
+                    Add Billing Address
+                  </Button>
+                </div>
+              )}
+            </CardContent>
           </Card>
 
           {/* Wallet Connection Card */}
@@ -242,6 +303,75 @@ export default function Profile() {
           </Card>
         </motion.div>
       </div>
+
+      {/* Billing Address Dialog */}
+      <Dialog open={billingDialogOpen} onOpenChange={setBillingDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Billing Address</DialogTitle>
+            <DialogDescription>
+              Update your default billing and shipping address
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="billing-name">Full Name</Label>
+              <Input
+                id="billing-name"
+                value={billingAddress.name}
+                onChange={(e) => setBillingAddress({ ...billingAddress, name: e.target.value })}
+                placeholder="Enter full name"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="billing-address">Street Address</Label>
+              <Input
+                id="billing-address"
+                value={billingAddress.address}
+                onChange={(e) => setBillingAddress({ ...billingAddress, address: e.target.value })}
+                placeholder="Enter street address"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="billing-city">City</Label>
+                <Input
+                  id="billing-city"
+                  value={billingAddress.city}
+                  onChange={(e) => setBillingAddress({ ...billingAddress, city: e.target.value })}
+                  placeholder="Enter city"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="billing-postal">Postal Code</Label>
+                <Input
+                  id="billing-postal"
+                  value={billingAddress.postalCode}
+                  onChange={(e) => setBillingAddress({ ...billingAddress, postalCode: e.target.value })}
+                  placeholder="Enter postal code"
+                />
+              </div>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="billing-country">Country</Label>
+              <Input
+                id="billing-country"
+                value={billingAddress.country}
+                onChange={(e) => setBillingAddress({ ...billingAddress, country: e.target.value })}
+                placeholder="Enter country"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setBillingDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveBillingAddress}>
+              Save Address
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Profile Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
