@@ -1,21 +1,29 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
-import { ArrowLeft, Package, User, Wallet, LogOut, Mail } from "lucide-react";
-import { useQuery } from "convex/react";
+import { ArrowLeft, Package, User, Wallet, LogOut, Mail, Edit } from "lucide-react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/hooks/use-auth";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { toast } from "sonner";
 
 export default function Profile() {
   const navigate = useNavigate();
   const { isLoading, isAuthenticated, user, signOut } = useAuth();
   const { address, isConnected } = useAccount();
   const orders = useQuery(api.orders.list);
+  const updateProfile = useMutation(api.users.updateProfile);
+
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editName, setEditName] = useState("");
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -23,9 +31,26 @@ export default function Profile() {
     }
   }, [isLoading, isAuthenticated, navigate]);
 
+  useEffect(() => {
+    if (user?.name) {
+      setEditName(user.name);
+    }
+  }, [user]);
+
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      await updateProfile({ name: editName });
+      toast.success("Profile updated successfully!");
+      setEditDialogOpen(false);
+    } catch (error) {
+      toast.error("Failed to update profile");
+      console.error(error);
+    }
   };
 
   if (isLoading || !user) {
@@ -74,10 +99,15 @@ export default function Profile() {
                     </CardDescription>
                   </div>
                 </div>
-                <Button variant="outline" onClick={handleSignOut}>
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
-                </Button>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="icon" onClick={() => setEditDialogOpen(true)}>
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" onClick={handleSignOut}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </div>
               </div>
             </CardHeader>
           </Card>
@@ -212,6 +242,49 @@ export default function Profile() {
           </Card>
         </motion.div>
       </div>
+
+      {/* Edit Profile Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Profile</DialogTitle>
+            <DialogDescription>
+              Update your profile information
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                placeholder="Enter your name"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                value={user.email || ""}
+                disabled
+                className="opacity-50"
+              />
+              <p className="text-xs text-muted-foreground">
+                Email cannot be changed
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveProfile}>
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
