@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { ArrowRight, Box, CheckCircle, Hexagon, ShieldCheck, ShoppingBag, ShoppingCart } from "lucide-react";
+import { ArrowRight, Box, CheckCircle, Hexagon, ShieldCheck, ShoppingBag, ShoppingCart, User } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useEffect, useState } from "react";
@@ -53,18 +53,22 @@ export default function Landing() {
                 </span>
               )}
             </Button>
-            <ConnectButton 
-              showBalance={false}
-              accountStatus="avatar"
-              chainStatus="none"
-            />
             {isAuthenticated ? (
-              <Button
-                variant="outline"
-                onClick={() => navigate("/profile")}
-              >
-                Profile
-              </Button>
+              <div className="flex items-center gap-2">
+                <ConnectButton 
+                  showBalance={false}
+                  accountStatus="avatar"
+                  chainStatus="none"
+                />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => navigate("/profile")}
+                  title="Profile"
+                >
+                  <User className="h-5 w-5" />
+                </Button>
+              </div>
             ) : (
               <Button
                 onClick={() => navigate("/auth")}
