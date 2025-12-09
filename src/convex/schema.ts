@@ -42,6 +42,38 @@ const schema = defineSchema(
       image: v.string(),
       features: v.array(v.string()),
     }),
+
+    carts: defineTable({
+      userId: v.id("users"),
+      items: v.array(v.object({
+        productId: v.id("products"),
+        quantity: v.number(),
+        variant: v.string(), // "1g", "5g", "10g"
+      })),
+    }).index("by_user", ["userId"]),
+
+    orders: defineTable({
+      userId: v.id("users"),
+      items: v.array(v.object({
+        productId: v.id("products"),
+        productName: v.string(),
+        quantity: v.number(),
+        variant: v.string(),
+        priceUsd: v.number(),
+        priceEth: v.number(),
+      })),
+      totalUsd: v.number(),
+      totalEth: v.number(),
+      status: v.string(), // "pending", "confirmed", "shipped", "delivered"
+      shippingAddress: v.optional(v.object({
+        name: v.string(),
+        address: v.string(),
+        city: v.string(),
+        country: v.string(),
+        postalCode: v.string(),
+      })),
+      transactionHash: v.optional(v.string()),
+    }).index("by_user", ["userId"]),
   },
   {
     schemaValidation: false,

@@ -17,6 +17,7 @@ import "./types/global.d.ts";
 // Lazy load route components for better code splitting
 const Landing = lazy(() => import("./pages/Landing.tsx"));
 const AuthPage = lazy(() => import("./pages/Auth.tsx"));
+const ProductDetail = lazy(() => import("./pages/ProductDetail.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 // Simple loading fallback for route transitions
@@ -69,6 +70,7 @@ createRoot(document.getElementById("root")!).render(
                   <Routes>
                     <Route path="/" element={<Landing />} />
                     <Route path="/auth" element={<AuthPage redirectAfterAuth="/" />} />
+                    <Route path="/product/:id" element={<ProductDetail />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>

@@ -2,19 +2,26 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { ArrowRight, Box, CheckCircle, Hexagon, ShieldCheck, ShoppingBag } from "lucide-react";
+import { ArrowRight, Box, CheckCircle, Hexagon, ShieldCheck, ShoppingBag, ShoppingCart } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useNavigate } from "react-router";
+import { CartDrawer } from "@/components/CartDrawer";
 
 export default function Landing() {
   const products = useQuery(api.products.list);
   const seedProducts = useMutation(api.products.seed);
+  const cart = useQuery(api.cart.get);
+  const navigate = useNavigate();
+  const [cartOpen, setCartOpen] = useState(false);
 
   useEffect(() => {
     seedProducts();
   }, [seedProducts]);
+
+  const cartItemCount = cart?.items.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
@@ -30,7 +37,20 @@ export default function Landing() {
             <a href="#features" className="hover:text-primary transition-colors cursor-pointer">Process</a>
             <a href="#trust" className="hover:text-primary transition-colors cursor-pointer">Trust</a>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="icon"
+              className="relative"
+              onClick={() => setCartOpen(true)}
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {cartItemCount > 0 && (
+                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold">
+                  {cartItemCount}
+                </span>
+              )}
+            </Button>
             <ConnectButton 
               showBalance={false}
               accountStatus="address"
@@ -65,7 +85,7 @@ export default function Landing() {
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                <Button size="lg" className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20" onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}>
                   Shop Collection <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 <Button size="lg" variant="outline" className="border-primary/20 hover:bg-primary/5">
@@ -124,8 +144,8 @@ export default function Landing() {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   viewport={{ once: true }}
                 >
-                  <Card className="h-full flex flex-col overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 group">
-                    <div className="aspect-square overflow-hidden relative bg-muted">
+                  <Card className="h-full flex flex-col overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 group cursor-pointer">
+                    <div className="aspect-square overflow-hidden relative bg-muted" onClick={() => navigate(`/product/${product._id}`)}>
                       <img 
                         src={product.image} 
                         alt={product.name}
@@ -135,13 +155,13 @@ export default function Landing() {
                         <Badge className="bg-background/80 backdrop-blur text-foreground border-border">{product.tier}</Badge>
                       </div>
                     </div>
-                    <CardHeader>
+                    <CardHeader onClick={() => navigate(`/product/${product._id}`)}>
                       <CardTitle className="flex justify-between items-start">
                         <span>{product.name}</span>
                       </CardTitle>
                       <CardDescription className="font-mono text-primary">{product.weight}</CardDescription>
                     </CardHeader>
-                    <CardContent className="flex-1">
+                    <CardContent className="flex-1" onClick={() => navigate(`/product/${product._id}`)}>
                       <p className="text-sm text-muted-foreground mb-4">{product.description}</p>
                       <ul className="space-y-2 text-sm">
                         {product.features.map((feature, i) => (
@@ -158,8 +178,8 @@ export default function Landing() {
                           <span className="text-2xl font-bold font-mono">${product.priceUsd}</span>
                           <span className="text-xs text-muted-foreground font-mono">{product.priceEth} ETH</span>
                         </div>
-                        <Button className="bg-primary hover:bg-primary/90">
-                          Mint / Buy
+                        <Button className="bg-primary hover:bg-primary/90" onClick={() => navigate(`/product/${product._id}`)}>
+                          View Details
                         </Button>
                       </div>
                     </CardFooter>
@@ -253,12 +273,15 @@ export default function Landing() {
             © 2024 Cyber Saffron. All rights reserved.
           </p>
           <div className="flex gap-4 text-sm text-muted-foreground">
-            <a href="#" className="hover:text-foreground">Terms</a>
-            <a href="#" className="hover:text-foreground">Privacy</a>
-            <a href="#" className="hover:text-foreground">Smart Contract</a>
+            <a href="#" className="hover:text-foreground cursor-pointer">Terms</a>
+            <a href="#" className="hover:text-foreground cursor-pointer">Privacy</a>
+            <a href="#" className="hover:text-foreground cursor-pointer">Smart Contract</a>
           </div>
         </div>
       </footer>
+
+      {/* Cart Drawer */}
+      <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
     </div>
   );
 }
