@@ -20,6 +20,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ["@metamask/sdk"],
+    include: ["@metamask/sdk", "@walletconnect/ethereum-provider"],
   },
 });

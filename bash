@@ -1,1 +1,1 @@
-pnpm add @metamask/sdk && rm src/wagmi.ts
+pnpm add @walletconnect/ethereum-provider
