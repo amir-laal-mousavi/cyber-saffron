@@ -2,10 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { ArrowRight, Box, CheckCircle, Hexagon, ShieldCheck, ShoppingBag, Wallet } from "lucide-react";
+import { ArrowRight, Box, CheckCircle, Hexagon, ShieldCheck, ShoppingBag } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useEffect } from "react";
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 export default function Landing() {
   const products = useQuery(api.products.list);
@@ -29,10 +30,7 @@ export default function Landing() {
             <a href="#features" className="hover:text-primary transition-colors">Process</a>
             <a href="#trust" className="hover:text-primary transition-colors">Trust</a>
           </div>
-          <Button variant="outline" className="rounded-full border-primary/50 hover:bg-primary/10 hover:text-primary hover:border-primary transition-all">
-            <Wallet className="mr-2 h-4 w-4" />
-            Connect Wallet
-          </Button>
+          <ConnectButton />
         </div>
       </nav>
 
@@ -80,7 +78,7 @@ export default function Landing() {
                   alt="Cyber Saffron Box"
                   className="aspect-square overflow-hidden rounded-xl object-cover object-center"
                   height="550"
-                  src="https://images.unsplash.com/photo-1596040033229-a0b3b83b2e4d?w=800&q=80"
+                  src="https://images.unsplash.com/photo-1599909533730-f9d49c5b5e10?w=800&q=80"
                   width="550"
                 />
                 <div className="absolute -bottom-6 -left-6 bg-background/90 backdrop-blur border border-border p-4 rounded-lg shadow-lg hidden md:block">
@@ -163,7 +161,6 @@ export default function Landing() {
                 </motion.div>
               ))
             ) : (
-              // Loading skeletons
               Array.from({ length: 3 }).map((_, i) => (
                 <Card key={i} className="h-[500px] animate-pulse bg-muted/50" />
               ))
@@ -184,7 +181,6 @@ export default function Landing() {
           </div>
 
           <div className="relative">
-            {/* Connecting line for desktop */}
             <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-primary/30 to-transparent -translate-y-1/2 hidden md:block"></div>
             
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative z-10">
