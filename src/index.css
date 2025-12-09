@@ -181,13 +181,26 @@
   }
   
   /* Make account button fully red when wallet is connected */
+  [data-rk] button[data-testid="rk-account-button"] {
+    border: none !important;
+    box-shadow: none !important;
+  }
+  
   [data-rk] button[data-testid="rk-account-button"] > div {
-    background: oklch(0.6 0.2 20) !important;
+    background: transparent !important;
     color: oklch(0.98 0 0) !important;
+    border: none !important;
   }
   
   [data-rk] button[data-testid="rk-account-button"] * {
     color: oklch(0.98 0 0) !important;
+    border: none !important;
+  }
+  
+  /* Remove any nested button borders */
+  [data-rk] button[data-testid="rk-account-button"] button {
+    border: none !important;
+    background: transparent !important;
   }
   
   /* Fix for wallet icon and text alignment */
