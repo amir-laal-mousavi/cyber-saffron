@@ -30,7 +30,11 @@ export default function Landing() {
             <a href="#features" className="hover:text-primary transition-colors">Process</a>
             <a href="#trust" className="hover:text-primary transition-colors">Trust</a>
           </div>
-          <ConnectButton />
+          <ConnectButton 
+            showBalance={false}
+            accountStatus="address"
+            chainStatus="icon"
+          />
         </div>
       </nav>
 

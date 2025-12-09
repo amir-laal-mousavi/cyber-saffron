@@ -141,4 +141,17 @@
   [role="button"]:not([disabled]) {
     cursor: pointer;
   }
+  
+  /* RainbowKit custom styling to match Cyber Saffron theme */
+  [data-rk] button[data-testid="rk-connect-button"] {
+    background: oklch(0.6 0.2 20) !important;
+    color: oklch(0.98 0 0) !important;
+    border-radius: 0.5rem !important;
+    font-weight: 500 !important;
+    transition: all 0.2s !important;
+  }
+  
+  [data-rk] button[data-testid="rk-connect-button"]:hover {
+    background: oklch(0.55 0.2 20) !important;
+  }
 }
