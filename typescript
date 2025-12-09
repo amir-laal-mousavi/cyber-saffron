@@ -1,0 +1,10 @@
+products: defineTable({
+  name: "Genesis Saffron Pack",
+  description: "Entry level premium saffron with digital twin.",
+  weight: "1 Gram",
+  tier: "Entry Level",
+  priceEth: 0.05,
+  priceUsd: 120,
+  image: "...",
+  features: ["Standard blister pack", "Digital QR twin", "Blockchain verified"],
+}),

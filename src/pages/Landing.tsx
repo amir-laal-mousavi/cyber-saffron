@@ -1,43 +1,262 @@
-// TODO: REPLACE THIS LANDING PAGE WITH AN ELEGANT, THEMATIC, AND WELL-DESIGNED LANDING PAGE RELEVANT TO THE PROJECT
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { Loader } from "lucide-react";
+import { ArrowRight, Box, CheckCircle, Hexagon, ShieldCheck, ShoppingBag, Wallet } from "lucide-react";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useEffect } from "react";
 
 export default function Landing() {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="min-h-screen flex flex-col"
-    >
+  const products = useQuery(api.products.list);
+  const seedProducts = useMutation(api.products.seed);
 
-      
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center">
-        <div className="max-w-5xl mx-auto relative px-4">
-        {/* TODO: landing page goes here; replace with the landing page */}
-        <div className="flex justify-center">
-          <img
-            src="./logo.svg"
-            alt="Lock Icon"
-            width={64}
-            height={64}
-            className="rounded-lg mb-8 mt-24"
-          />
+  useEffect(() => {
+    seedProducts();
+  }, [seedProducts]);
+
+  return (
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
+      {/* Navigation */}
+      <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-16 items-center justify-between px-4 md:px-8">
+          <div className="flex items-center gap-2 font-bold text-xl tracking-tighter">
+            <Hexagon className="h-6 w-6 text-primary fill-primary/20" />
+            <span>CYBER SAFFRON</span>
+          </div>
+          <div className="hidden md:flex items-center gap-6 text-sm font-medium">
+            <a href="#products" className="hover:text-primary transition-colors">Collection</a>
+            <a href="#features" className="hover:text-primary transition-colors">Process</a>
+            <a href="#trust" className="hover:text-primary transition-colors">Trust</a>
+          </div>
+          <Button variant="outline" className="rounded-full border-primary/50 hover:bg-primary/10 hover:text-primary hover:border-primary transition-all">
+            <Wallet className="mr-2 h-4 w-4" />
+            Connect Wallet
+          </Button>
         </div>
-        <div className="flex items-center justify-center">
-          <Loader className="h-8 w-8 animate-spin mr-4" />
-          <a
-            href="https://vly.ai"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary underline hover:text-primary/80 transition-colors"
-          >
-            vly.ai
-          </a>&nbsp; is generating your project...
+      </nav>
+
+      {/* Hero Section */}
+      <section className="relative overflow-hidden pt-16 md:pt-24 lg:pt-32 pb-16">
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+        <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-primary/20 opacity-20 blur-[100px]"></div>
+        
+        <div className="container px-4 md:px-8">
+          <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex flex-col justify-center space-y-8"
+            >
+              <div className="space-y-4">
+                <Badge variant="outline" className="w-fit text-primary border-primary/30 bg-primary/5">
+                  Verified on Blockchain
+                </Badge>
+                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
+                  The Future of <span className="text-primary">Heritage</span>
+                </h1>
+                <p className="max-w-[600px] text-muted-foreground md:text-xl">
+                  Premium Iranian Saffron verified on Blockchain. Experience the fusion of ancient luxury and modern technology.
+                </p>
+              </div>
+              <div className="flex flex-col gap-2 min-[400px]:flex-row">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20">
+                  Shop Collection <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <Button size="lg" variant="outline" className="border-primary/20 hover:bg-primary/5">
+                  View Smart Contract
+                </Button>
+              </div>
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="mx-auto lg:mr-0 relative"
+            >
+              <div className="relative rounded-2xl border border-border bg-card/50 backdrop-blur-sm p-2 shadow-2xl">
+                <img
+                  alt="Cyber Saffron Box"
+                  className="aspect-square overflow-hidden rounded-xl object-cover object-center"
+                  height="550"
+                  src="https://harmless-tapir-303.convex.cloud/api/storage/8b1fca36-0300-4b54-a4f2-f29abd5e0fe4"
+                  width="550"
+                />
+                <div className="absolute -bottom-6 -left-6 bg-background/90 backdrop-blur border border-border p-4 rounded-lg shadow-lg hidden md:block">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
+                      <ShieldCheck className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Verification</p>
+                      <p className="font-bold font-mono">100% AUTHENTIC</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
+      </section>
+
+      {/* Products Section */}
+      <section id="products" className="py-16 md:py-24 bg-muted/30">
+        <div className="container px-4 md:px-8">
+          <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">The Collection</h2>
+            <p className="max-w-[700px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+              Choose your tier of exclusivity. Each package comes with a digital twin.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {products ? (
+              products.map((product, index) => (
+                <motion.div
+                  key={product._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  <Card className="h-full flex flex-col overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 group">
+                    <div className="aspect-square overflow-hidden relative bg-muted">
+                      <img 
+                        src={product.image} 
+                        alt={product.name}
+                        className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <div className="absolute top-4 right-4">
+                        <Badge className="bg-background/80 backdrop-blur text-foreground border-border">{product.tier}</Badge>
+                      </div>
+                    </div>
+                    <CardHeader>
+                      <CardTitle className="flex justify-between items-start">
+                        <span>{product.name}</span>
+                      </CardTitle>
+                      <CardDescription className="font-mono text-primary">{product.weight}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-1">
+                      <p className="text-sm text-muted-foreground mb-4">{product.description}</p>
+                      <ul className="space-y-2 text-sm">
+                        {product.features.map((feature, i) => (
+                          <li key={i} className="flex items-center gap-2">
+                            <CheckCircle className="h-3 w-3 text-secondary" />
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                    <CardFooter className="flex flex-col gap-4 border-t bg-muted/20 p-6">
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex flex-col">
+                          <span className="text-2xl font-bold font-mono">${product.priceUsd}</span>
+                          <span className="text-xs text-muted-foreground font-mono">{product.priceEth} ETH</span>
+                        </div>
+                        <Button className="bg-primary hover:bg-primary/90">
+                          Mint / Buy
+                        </Button>
+                      </div>
+                    </CardFooter>
+                  </Card>
+                </motion.div>
+              ))
+            ) : (
+              // Loading skeletons
+              Array.from({ length: 3 }).map((_, i) => (
+                <Card key={i} className="h-[500px] animate-pulse bg-muted/50" />
+              ))
+            )}
+          </div>
         </div>
-      </div>
-    </motion.div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-16 md:py-24 relative overflow-hidden">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-secondary/10 via-background to-background"></div>
+        <div className="container px-4 md:px-8">
+          <div className="flex flex-col items-center justify-center space-y-4 text-center mb-16">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Transparent Process</h2>
+            <p className="max-w-[600px] text-muted-foreground">
+              From the fields of Iran to your doorstep, tracked immutably.
+            </p>
+          </div>
+
+          <div className="relative">
+            {/* Connecting line for desktop */}
+            <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-primary/30 to-transparent -translate-y-1/2 hidden md:block"></div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative z-10">
+              {[
+                { title: "Harvesting", icon: Box, desc: "Hand-picked premium threads" },
+                { title: "Lab Testing", icon: ShieldCheck, desc: "ISO certified quality check" },
+                { title: "Minting", icon: Hexagon, desc: "Blockchain verification" },
+                { title: "Delivery", icon: ShoppingBag, desc: "Secure global shipping" },
+              ].map((step, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  viewport={{ once: true }}
+                  className="flex flex-col items-center text-center bg-background border border-border p-6 rounded-xl shadow-sm hover:border-primary/50 transition-colors"
+                >
+                  <div className="h-12 w-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary mb-4 border border-secondary/20">
+                    <step.icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="font-bold text-lg mb-2">{step.title}</h3>
+                  <p className="text-sm text-muted-foreground">{step.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust Section */}
+      <section id="trust" className="py-16 border-t border-border/50">
+        <div className="container px-4 md:px-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="text-center md:text-left">
+              <h3 className="text-2xl font-bold mb-2">Trusted & Verified</h3>
+              <p className="text-muted-foreground">Certified by international standards and blockchain technology.</p>
+            </div>
+            <div className="flex flex-wrap justify-center gap-8 opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
+              <div className="flex items-center gap-2 font-bold text-xl">
+                <ShieldCheck className="h-8 w-8" />
+                <span>ISO 3632</span>
+              </div>
+              <div className="flex items-center gap-2 font-bold text-xl">
+                <Hexagon className="h-8 w-8" />
+                <span>Polygon</span>
+              </div>
+              <div className="flex items-center gap-2 font-bold text-xl">
+                <Box className="h-8 w-8" />
+                <span>Etherscan</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-8 border-t border-border bg-muted/20">
+        <div className="container px-4 md:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-2 font-bold">
+            <Hexagon className="h-5 w-5 text-primary" />
+            <span>CYBER SAFFRON</span>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            © 2024 Cyber Saffron. All rights reserved.
+          </p>
+          <div className="flex gap-4 text-sm text-muted-foreground">
+            <a href="#" className="hover:text-foreground">Terms</a>
+            <a href="#" className="hover:text-foreground">Privacy</a>
+            <a href="#" className="hover:text-foreground">Smart Contract</a>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 }
