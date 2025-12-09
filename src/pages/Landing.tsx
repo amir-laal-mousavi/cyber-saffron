@@ -175,14 +175,14 @@ export default function Landing() {
                         <Badge className="bg-background/80 backdrop-blur text-foreground border-border">{product.tier}</Badge>
                       </div>
                     </div>
-                    <CardHeader onClick={() => navigate(`/product/${product._id}`)} className="pb-3">
-                      <CardTitle className="flex justify-between items-start text-base">
+                    <CardHeader onClick={() => navigate(`/product/${product._id}`)} className="pb-2">
+                      <CardTitle className="flex justify-between items-start text-lg">
                         <span>{product.name}</span>
                       </CardTitle>
-                      <CardDescription className="font-mono text-primary text-xs">{product.weight}</CardDescription>
+                      <CardDescription className="font-mono text-primary text-xs mt-0.5">{product.weight}</CardDescription>
                     </CardHeader>
-                    <CardContent className="flex-1 py-3" onClick={() => navigate(`/product/${product._id}`)}> 
-                      <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{product.description}</p>
+                    <CardContent className="flex-1 py-2" onClick={() => navigate(`/product/${product._id}`)}> 
+                      <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{product.description}</p>
                       <ul className="space-y-1.5 text-xs">
                         {product.features.slice(0, 2).map((feature, i) => (
                           <li key={i} className="flex items-center gap-1.5">
