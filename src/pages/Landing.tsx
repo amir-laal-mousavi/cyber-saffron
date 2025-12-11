@@ -82,11 +82,14 @@ export default function Landing() {
 
       {/* Hero Section - Glassmorphism Design */}
       <section className="relative overflow-hidden h-[80vh] min-h-[600px] flex items-center justify-center">
-        {/* Sharp Background Image */}
+        {/* Full Width/Height Saffron Background Image */}
         <div 
-          className="absolute inset-0 -z-10 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 w-full h-full"
           style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=90')",
+            backgroundImage: "url('https://images.unsplash.com/photo-1599909533730-f9d49c0c5b8e?w=1920&q=90')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
           }}
         >
           {/* Subtle overlay for better text contrast */}
