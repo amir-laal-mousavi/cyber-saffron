@@ -180,8 +180,11 @@ export default function Landing() {
       {/* Hero Section */}
       <section className="relative overflow-hidden h-[80vh] min-h-[600px] flex items-center justify-center">
         {/* Full Width/Height Saffron Background Image */}
-        <div 
+        <motion.div 
           className="absolute inset-0 w-full h-full"
+          initial={{ scale: 1.1, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
           style={{
             backgroundImage: "url('https://images.unsplash.com/photo-1599909533730-f9d49c0c5b8e?w=1920&q=90')",
             backgroundSize: "cover",
@@ -190,8 +193,13 @@ export default function Landing() {
           }}
         >
           {/* Overlay for better text contrast */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50"></div>
-        </div>
+          <motion.div 
+            className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.3 }}
+          ></motion.div>
+        </motion.div>
         
         {/* Text Content Directly on Background */}
         <motion.div
