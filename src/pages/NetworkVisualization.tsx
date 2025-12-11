@@ -58,7 +58,7 @@ export default function NetworkVisualization() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col overflow-hidden">
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-md">
         <div className="container flex h-16 items-center justify-between px-4 md:px-8 mx-auto">
@@ -93,7 +93,7 @@ export default function NetworkVisualization() {
       {/* Visualization Canvas */}
       <div
         ref={containerRef}
-        className="flex-1 overflow-hidden relative bg-muted/20 cursor-grab active:cursor-grabbing"
+        className="flex-1 relative bg-muted/20 cursor-grab active:cursor-grabbing overflow-hidden"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
