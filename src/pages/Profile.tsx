@@ -22,6 +22,7 @@ export default function Profile() {
   const orders = useQuery(api.orders.list);
   const updateProfile = useMutation(api.users.updateProfile);
   const initializeAgent = useMutation(api.agents.initializeAgent);
+  const generateReferralCode = useMutation(api.agents.generateReferralCode);
   const dashboardData = useQuery(api.agents.getDashboardData);
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -119,13 +120,13 @@ export default function Profile() {
   const handleGenerateReferralCode = async () => {
     setIsGeneratingCode(true);
     try {
-      // Generate a temporary referral code to trigger initialization
-      const tempCode = "GENESIS00"; // This should be a valid existing code
-      const result = await initializeAgent({ referralCode: tempCode });
+      const result = await generateReferralCode({});
       if (result.success) {
         toast.success(`Referral Code ${result.referralCode} created successfully!`, {
           description: "Your unique tracking ID is now active.",
         });
+      } else {
+        toast.info(result.message || "Referral code already exists");
       }
     } catch (error) {
       toast.error("Failed to generate referral code. Please try again.");

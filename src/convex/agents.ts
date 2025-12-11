@@ -3,7 +3,7 @@ import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
 // Generate a unique referral code
-function generateReferralCode(): string {
+function createRandomReferralCode(): string {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let code = "";
   for (let i = 0; i < 8; i++) {
@@ -72,14 +72,14 @@ export const initializeAgent = mutation({
     }
 
     // Generate unique referral code for new agent
-    let newReferralCode = generateReferralCode();
+    let newReferralCode = createRandomReferralCode();
     let existing = await ctx.db
       .query("users")
       .withIndex("by_referral_code", (q) => q.eq("referralCode", newReferralCode))
       .first();
     
     while (existing) {
-      newReferralCode = generateReferralCode();
+      newReferralCode = createRandomReferralCode();
       existing = await ctx.db
         .query("users")
         .withIndex("by_referral_code", (q) => q.eq("referralCode", newReferralCode))
@@ -116,6 +116,66 @@ export const initializeAgent = mutation({
       await ctx.db.patch(referrerNetwork._id, {
         directReferrals: referrerNetwork.directReferrals + 1,
         totalDownline: referrerNetwork.totalDownline + 1,
+      });
+    }
+
+    return { success: true, referralCode: newReferralCode };
+  },
+});
+
+// Generate referral code for existing user who doesn't have one yet
+export const generateReferralCode = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const user = await ctx.db.get(userId);
+    if (!user) throw new Error("User not found");
+
+    // Check if already has a referral code
+    if (user.referralCode) {
+      return { success: false, message: "Referral code already exists", referralCode: user.referralCode };
+    }
+
+    // Generate unique referral code
+    let newReferralCode = createRandomReferralCode();
+    let existing = await ctx.db
+      .query("users")
+      .withIndex("by_referral_code", (q) => q.eq("referralCode", newReferralCode))
+      .first();
+    
+    while (existing) {
+      newReferralCode = createRandomReferralCode();
+      existing = await ctx.db
+        .query("users")
+        .withIndex("by_referral_code", (q) => q.eq("referralCode", newReferralCode))
+        .first();
+    }
+
+    // Update user with new referral code and initialize as agent if not already
+    await ctx.db.patch(userId, {
+      role: user.role || "agent",
+      referralCode: newReferralCode,
+      agentTier: user.agentTier || "bronze",
+      totalSales: user.totalSales || 0,
+      totalCommission: user.totalCommission || 0,
+      pendingPayout: user.pendingPayout || 0,
+    });
+
+    // Create network entry if doesn't exist
+    const existingNetwork = await ctx.db
+      .query("agentNetwork")
+      .withIndex("by_agent", (q) => q.eq("agentId", userId))
+      .first();
+
+    if (!existingNetwork) {
+      await ctx.db.insert("agentNetwork", {
+        agentId: userId,
+        parentAgentId: user.referredBy,
+        level: 0,
+        totalDownline: 0,
+        directReferrals: 0,
       });
     }
 
