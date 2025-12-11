@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
-import { ArrowLeft, Package, User, Wallet, LogOut, Mail, Edit, TrendingUp, Users, DollarSign, Copy, CheckCircle, Wand2, QrCode, Share2, Loader2 } from "lucide-react";
+import { ArrowLeft, Package, User, Wallet, LogOut, Mail, Edit, TrendingUp, Users, DollarSign, Copy, CheckCircle, Wand2, QrCode, Share2, Loader2, Maximize2 } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useNavigate } from "react-router";
@@ -397,13 +397,23 @@ export default function Profile() {
                     Interactive visualization of your agent network and their performance
                   </CardDescription>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleSeedTestData}
-                >
-                  Add Test Data
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSeedTestData}
+                  >
+                    Add Test Data
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => navigate("/network")}
+                  >
+                    <Maximize2 className="h-4 w-4 mr-2" />
+                    Full View
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
