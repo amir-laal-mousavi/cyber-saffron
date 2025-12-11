@@ -18,12 +18,52 @@ export default function Landing() {
   const navigate = useNavigate();
   const [cartOpen, setCartOpen] = useState(false);
   const { isAuthenticated } = useAuth();
+  const [activeSection, setActiveSection] = useState<string>("");
 
   useEffect(() => {
     seedProducts();
   }, [seedProducts]);
 
+  // ScrollSpy: Track active section
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ["products", "features", "trust"];
+      const scrollPosition = window.scrollY + 100; // Offset for better detection
+
+      for (const sectionId of sections) {
+        const section = document.getElementById(sectionId);
+        if (section) {
+          const { offsetTop, offsetHeight } = section;
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+            setActiveSection(sectionId);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Initial check
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const cartItemCount = cart?.items.reduce((sum, item) => sum + item.quantity, 0) || 0;
+
+  const scrollToSection = (sectionId: string) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      const navbarHeight = 64; // h-16 = 64px
+      const targetPosition = section.offsetTop - navbarHeight;
+      
+      window.scrollTo({
+        top: targetPosition,
+        behavior: 'smooth'
+      });
+      
+      // Update URL hash without jumping
+      window.history.pushState(null, '', `#${sectionId}`);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
@@ -37,33 +77,48 @@ export default function Landing() {
           <div className="hidden md:flex items-center gap-6 text-sm font-medium">
             <a 
               href="#products" 
-              className="hover:text-primary transition-colors cursor-pointer"
+              className={`hover:text-primary transition-colors cursor-pointer relative ${
+                activeSection === "products" ? "text-primary font-semibold" : ""
+              }`}
               onClick={(e) => {
                 e.preventDefault();
-                document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
+                scrollToSection('products');
               }}
             >
               Collection
+              {activeSection === "products" && (
+                <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
+              )}
             </a>
             <a 
               href="#features" 
-              className="hover:text-primary transition-colors cursor-pointer"
+              className={`hover:text-primary transition-colors cursor-pointer relative ${
+                activeSection === "features" ? "text-primary font-semibold" : ""
+              }`}
               onClick={(e) => {
                 e.preventDefault();
-                document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+                scrollToSection('features');
               }}
             >
               Process
+              {activeSection === "features" && (
+                <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
+              )}
             </a>
             <a 
               href="#trust" 
-              className="hover:text-primary transition-colors cursor-pointer"
+              className={`hover:text-primary transition-colors cursor-pointer relative ${
+                activeSection === "trust" ? "text-primary font-semibold" : ""
+              }`}
               onClick={(e) => {
                 e.preventDefault();
-                document.getElementById('trust')?.scrollIntoView({ behavior: 'smooth' });
+                scrollToSection('trust');
               }}
             >
               Trust
+              {activeSection === "trust" && (
+                <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
+              )}
             </a>
           </div>
           <div className="flex items-center gap-3">
@@ -149,7 +204,7 @@ export default function Landing() {
             <Button 
               size="lg" 
               className="bg-white hover:bg-white/90 text-black font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
-              onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => scrollToSection('products')}
             >
               Get Started Now
               <ArrowRight className="ml-2 h-5 w-5" />

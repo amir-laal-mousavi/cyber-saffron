@@ -3,131 +3,73 @@
 @import "tw-animate-css";
 @custom-variant dark (&:is(.dark *));
 
-/* DO NOT CHANGE */
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+  --color-primary: oklch(0.55 0.25 30);
+  --color-primary-foreground: oklch(0.98 0 0);
+  --color-secondary: oklch(0.45 0.15 270);
+  --color-secondary-foreground: oklch(0.98 0 0);
+  --color-muted: oklch(0.96 0.01 270);
+  --color-muted-foreground: oklch(0.45 0.01 270);
+  --color-accent: oklch(0.94 0.02 270);
+  --color-accent-foreground: oklch(0.15 0.01 270);
+  --color-destructive: oklch(0.55 0.25 25);
+  --color-destructive-foreground: oklch(0.98 0 0);
+  --color-border: oklch(0.90 0.01 270);
+  --color-input: oklch(0.90 0.01 270);
+  --color-ring: oklch(0.55 0.25 30);
+  --color-background: oklch(1 0 0);
+  --color-foreground: oklch(0.09 0.01 270);
+  --color-card: oklch(1 0 0);
+  --color-card-foreground: oklch(0.09 0.01 270);
+  --color-popover: oklch(1 0 0);
+  --color-popover-foreground: oklch(0.09 0.01 270);
+  --radius: 0.5rem;
 }
 
 /* CHANGE VALUES FOR THEME */
 :root {
-  --radius: 0.5rem;
-  /* Off-white/Light Grey #F8F9FA */
-  --background: oklch(0.98 0 0);
-  /* Dark Grey #1A1A1A */
-  --foreground: oklch(0.2 0 0);
-  
-  /* White for cards with slight transparency for glassmorphism later */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.09 0.01 270);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0 0);
-  
+  --card-foreground: oklch(0.09 0.01 270);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0 0);
-  
-  /* Saffron Red #FF3B30 */
-  --primary: oklch(0.6 0.2 20);
+  --popover-foreground: oklch(0.09 0.01 270);
+  --primary: oklch(0.55 0.25 30);
   --primary-foreground: oklch(0.98 0 0);
-  
-  /* Circuit Blue #007AFF */
-  --secondary: oklch(0.6 0.2 250);
+  --secondary: oklch(0.45 0.15 270);
   --secondary-foreground: oklch(0.98 0 0);
-  
-  --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.55 0 0);
-  
-  /* Saffron Red Accent */
-  --accent: oklch(0.6 0.2 20);
-  --accent-foreground: oklch(0.98 0 0);
-  
-  --destructive: oklch(0.577 0.245 27.325);
-  
-  /* Light grey borders */
-  --border: oklch(0.92 0 0);
-  --input: oklch(0.92 0 0);
-  --ring: oklch(0.6 0.2 20); /* Saffron ring */
-  
-  --chart-1: oklch(0.6 0.2 20);
-  --chart-2: oklch(0.6 0.2 250);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  
-  --sidebar: oklch(0.98 0 0);
-  --sidebar-foreground: oklch(0.2 0 0);
-  --sidebar-primary: oklch(0.6 0.2 20);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.96 0 0);
-  --sidebar-accent-foreground: oklch(0.2 0 0);
-  --sidebar-border: oklch(0.92 0 0);
-  --sidebar-ring: oklch(0.6 0.2 20);
+  --muted: oklch(0.96 0.01 270);
+  --muted-foreground: oklch(0.45 0.01 270);
+  --accent: oklch(0.94 0.02 270);
+  --accent-foreground: oklch(0.15 0.01 270);
+  --destructive: oklch(0.55 0.25 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.90 0.01 270);
+  --input: oklch(0.90 0.01 270);
+  --ring: oklch(0.55 0.25 30);
+  --radius: 0.5rem;
 }
 
 .dark {
-  /* Darker theme for dark mode if needed, but primary design is light/off-white based on prompt */
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.6 0.2 20);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.6 0.2 250);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.6 0.2 20);
-  --chart-1: oklch(0.6 0.2 20);
-  --chart-2: oklch(0.6 0.2 250);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.6 0.2 20);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.6 0.2 20);
+  --background: oklch(0.13 0.01 270);
+  --foreground: oklch(0.98 0.01 270);
+  --card: oklch(0.13 0.01 270);
+  --card-foreground: oklch(0.98 0.01 270);
+  --popover: oklch(0.13 0.01 270);
+  --popover-foreground: oklch(0.98 0.01 270);
+  --primary: oklch(0.65 0.25 30);
+  --primary-foreground: oklch(0.09 0.01 270);
+  --secondary: oklch(0.25 0.15 270);
+  --secondary-foreground: oklch(0.98 0.01 270);
+  --muted: oklch(0.20 0.01 270);
+  --muted-foreground: oklch(0.65 0.01 270);
+  --accent: oklch(0.25 0.02 270);
+  --accent-foreground: oklch(0.98 0.01 270);
+  --destructive: oklch(0.60 0.25 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.25 0.01 270);
+  --input: oklch(0.25 0.01 270);
+  --ring: oklch(0.65 0.25 30);
 }
 
 @layer base {
@@ -142,78 +84,9 @@
     cursor: pointer;
   }
   
-  /* RainbowKit custom styling to match Cyber Saffron theme */
-  [data-rk] {
-    font-family: inherit !important;
-  }
-  
-  [data-rk] button {
-    font-family: inherit !important;
-  }
-  
-  /* RainbowKit button styling */
-  [data-rk] button {
-    font-family: inherit !important;
-    height: auto !important;
-    min-height: 2.25rem !important;
-  }
-  
-  [data-rk] button[data-testid="rk-connect-button"],
-  [data-rk] button[data-testid="rk-account-button"] {
-    background: oklch(0.6 0.2 20) !important;
-    color: oklch(0.98 0 0) !important;
-    border-radius: 0.5rem !important;
-    font-weight: 500 !important;
-    transition: all 0.2s !important;
-    padding: 0 !important;
-    border: none !important;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 0.5rem !important;
-  }
-  
-  [data-rk] button[data-testid="rk-connect-button"]:hover,
-  [data-rk] button[data-testid="rk-account-button"]:hover {
-    background: oklch(0.55 0.2 20) !important;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
-  }
-  
-  /* Make account button fully red when wallet is connected */
-  [data-rk] button[data-testid="rk-account-button"] {
-    border: none !important;
-    box-shadow: none !important;
-  }
-  
-  [data-rk] button[data-testid="rk-account-button"] > div {
-    background: transparent !important;
-    color: oklch(0.98 0 0) !important;
-    border: none !important;
-  }
-  
-  [data-rk] button[data-testid="rk-account-button"] * {
-    color: oklch(0.98 0 0) !important;
-    border: none !important;
-  }
-  
-  /* Remove any nested button borders */
-  [data-rk] button[data-testid="rk-account-button"] button {
-    border: none !important;
-    background: transparent !important;
-  }
-  
-  /* Fix for wallet icon and text alignment */
-  [data-rk] button img,
-  [data-rk] button svg {
-    width: 1.25rem !important;
-    height: 1.25rem !important;
-    flex-shrink: 0 !important;
-  }
-  
-  [data-rk] button > div {
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
+  /* Smooth scrolling with offset for fixed header */
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem; /* 80px offset for fixed navbar (h-16 = 4rem + extra padding) */
   }
 }
