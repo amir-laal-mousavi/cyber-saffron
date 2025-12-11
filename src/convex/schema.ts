@@ -2,17 +2,31 @@ import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { Infer, v } from "convex/values";
 
-// default user roles. can add / remove based on the project as needed
+// Agent tier system for commission structure
+export const AGENT_TIERS = {
+  BRONZE: "bronze",
+  SILVER: "silver",
+  GOLD: "gold",
+  PLATINUM: "platinum",
+} as const;
+
+export const agentTierValidator = v.union(
+  v.literal(AGENT_TIERS.BRONZE),
+  v.literal(AGENT_TIERS.SILVER),
+  v.literal(AGENT_TIERS.GOLD),
+  v.literal(AGENT_TIERS.PLATINUM),
+);
+export type AgentTier = Infer<typeof agentTierValidator>;
+
+// default user roles
 export const ROLES = {
   ADMIN: "admin",
-  USER: "user",
-  MEMBER: "member",
+  AGENT: "agent",
 } as const;
 
 export const roleValidator = v.union(
   v.literal(ROLES.ADMIN),
-  v.literal(ROLES.USER),
-  v.literal(ROLES.MEMBER),
+  v.literal(ROLES.AGENT),
 );
 export type Role = Infer<typeof roleValidator>;
 
@@ -31,6 +45,14 @@ const schema = defineSchema(
 
       role: v.optional(roleValidator), // role of the user. do not remove
       
+      // Agent-specific fields
+      referralCode: v.optional(v.string()), // Unique referral code for this agent
+      referredBy: v.optional(v.id("users")), // ID of the agent who referred this user
+      agentTier: v.optional(agentTierValidator), // Current tier level
+      totalSales: v.optional(v.number()), // Total sales volume in USD
+      totalCommission: v.optional(v.number()), // Total commission earned
+      pendingPayout: v.optional(v.number()), // Pending commission payout
+      
       billingAddress: v.optional(v.object({
         name: v.string(),
         address: v.string(),
@@ -38,7 +60,10 @@ const schema = defineSchema(
         country: v.string(),
         postalCode: v.string(),
       })),
-    }).index("email", ["email"]), // index for the email. do not remove or modify
+    })
+      .index("email", ["email"]) // index for the email. do not remove or modify
+      .index("by_referral_code", ["referralCode"])
+      .index("by_referrer", ["referredBy"]),
 
     products: defineTable({
       name: v.string(),
@@ -81,7 +106,33 @@ const schema = defineSchema(
         postalCode: v.string(),
       })),
       transactionHash: v.optional(v.string()),
+      commissionPaid: v.optional(v.boolean()), // Track if commission has been distributed
     }).index("by_user", ["userId"]),
+
+    // Commission tracking for each sale
+    commissions: defineTable({
+      orderId: v.id("orders"),
+      agentId: v.id("users"), // Agent who earned the commission
+      amount: v.number(), // Commission amount in USD
+      percentage: v.number(), // Commission percentage applied
+      tier: agentTierValidator, // Tier at time of commission
+      status: v.string(), // "pending", "paid"
+      paidAt: v.optional(v.number()),
+    })
+      .index("by_agent", ["agentId"])
+      .index("by_order", ["orderId"])
+      .index("by_status", ["status"]),
+
+    // Network relationships for visualization
+    agentNetwork: defineTable({
+      agentId: v.id("users"),
+      parentAgentId: v.optional(v.id("users")), // Direct upline
+      level: v.number(), // Depth in the network (0 = top level)
+      totalDownline: v.number(), // Total agents in downline
+      directReferrals: v.number(), // Direct referrals count
+    })
+      .index("by_agent", ["agentId"])
+      .index("by_parent", ["parentAgentId"]),
   },
   {
     schemaValidation: false,

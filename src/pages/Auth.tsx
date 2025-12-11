@@ -26,10 +26,13 @@ interface AuthProps {
 function Auth({ redirectAfterAuth }: AuthProps = {}) {
   const { isLoading: authLoading, isAuthenticated, signIn } = useAuth();
   const navigate = useNavigate();
-  const [step, setStep] = useState<"signIn" | { email: string }>("signIn");
+  const [step, setStep] = useState<"signIn" | "referral" | { email: string }>("referral");
+  const [referralCode, setReferralCode] = useState("");
+  const [referralError, setReferralError] = useState<string | null>(null);
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [storedReferralCode, setStoredReferralCode] = useState<string>(""); // Store referral code for later use
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
@@ -37,12 +40,34 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       navigate(redirect);
     }
   }, [authLoading, isAuthenticated, navigate, redirectAfterAuth]);
+
+  const handleReferralSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsLoading(true);
+    setReferralError(null);
+    
+    // For now, just proceed to sign in - verification will happen on backend
+    // TODO: Add proper verification via Convex action
+    if (referralCode.length >= 6) {
+      setStoredReferralCode(referralCode); // Store for later use
+      setStep("signIn");
+      setIsLoading(false);
+    } else {
+      setReferralError("Please enter a valid referral code");
+      setIsLoading(false);
+    }
+  };
+
   const handleEmailSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
     try {
       const formData = new FormData(event.currentTarget);
+      // Store referral code in session storage for post-auth initialization
+      if (storedReferralCode) {
+        sessionStorage.setItem("pendingReferralCode", storedReferralCode);
+      }
       await signIn("email-otp", formData);
       setStep({ email: formData.get("email") as string });
       setIsLoading(false);
@@ -79,22 +104,23 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     }
   };
 
-  const handleGuestLogin = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      console.log("Attempting anonymous sign in...");
-      await signIn("anonymous");
-      console.log("Anonymous sign in successful");
-      const redirect = redirectAfterAuth || "/";
-      navigate(redirect);
-    } catch (error) {
-      console.error("Guest login error:", error);
-      console.error("Error details:", JSON.stringify(error, null, 2));
-      setError(`Failed to sign in as guest: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      setIsLoading(false);
-    }
-  };
+  // handleGuestLogin is disabled since agents must have referral codes
+  // const handleGuestLogin = async () => {
+  //   setIsLoading(true);
+  //   setError(null);
+  //   try {
+  //     console.log("Attempting anonymous sign in...");
+  //     await signIn("anonymous");
+  //     console.log("Anonymous sign in successful");
+  //     const redirect = redirectAfterAuth || "/";
+  //     navigate(redirect);
+  //   } catch (error) {
+  //     console.error("Guest login error:", error);
+  //     console.error("Error details:", JSON.stringify(error, null, 2));
+  //     setError(`Failed to sign in as guest: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  //     setIsLoading(false);
+  //   }
+  // };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -104,7 +130,61 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       <div className="flex-1 flex items-center justify-center">
         <div className="flex items-center justify-center h-full flex-col">
         <Card className="min-w-[350px] pb-0 border shadow-md">
-          {step === "signIn" ? (
+          {step === "referral" ? (
+            <>
+              <CardHeader className="text-center">
+                <div className="flex justify-center">
+                  <img
+                    src="./logo.svg"
+                    alt="Lock Icon"
+                    width={64}
+                    height={64}
+                    className="rounded-lg mb-4 mt-4 cursor-pointer"
+                    onClick={() => navigate("/")}
+                  />
+                </div>
+                <CardTitle className="text-xl">Join as Agent</CardTitle>
+                <CardDescription>
+                  Enter your referral code to get started
+                </CardDescription>
+              </CardHeader>
+              <form onSubmit={handleReferralSubmit}>
+                <CardContent>
+                  <div className="relative flex items-center gap-2">
+                    <Input
+                      name="referralCode"
+                      placeholder="REFERRAL CODE"
+                      type="text"
+                      className="uppercase font-mono text-center tracking-wider"
+                      value={referralCode}
+                      onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                      disabled={isLoading}
+                      required
+                      maxLength={8}
+                    />
+                    <Button
+                      type="submit"
+                      variant="outline"
+                      size="icon"
+                      disabled={isLoading || referralCode.length < 6}
+                    >
+                      {isLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <ArrowRight className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                  {referralError && (
+                    <p className="mt-2 text-sm text-red-500">{referralError}</p>
+                  )}
+                  <p className="mt-4 text-xs text-muted-foreground text-center">
+                    Don't have a referral code? Contact your upline agent.
+                  </p>
+                </CardContent>
+              </form>
+            </>
+          ) : step === "signIn" ? (
             <>
               <CardHeader className="text-center">
               <div className="flex justify-center">
@@ -155,26 +235,13 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                   )}
                   
                   <div className="mt-4">
-                    <div className="relative">
-                      <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t" />
-                      </div>
-                      <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-background px-2 text-muted-foreground">
-                          Or
-                        </span>
-                      </div>
-                    </div>
-                    
                     <Button
                       type="button"
-                      variant="outline"
-                      className="w-full mt-4"
-                      onClick={handleGuestLogin}
-                      disabled={isLoading}
+                      variant="ghost"
+                      className="w-full text-xs"
+                      onClick={() => setStep("referral")}
                     >
-                      <UserX className="mr-2 h-4 w-4" />
-                      Continue as Guest
+                      ← Back to referral code
                     </Button>
                   </div>
                 </CardContent>
@@ -185,12 +252,12 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
               <CardHeader className="text-center mt-4">
                 <CardTitle>Check your email</CardTitle>
                 <CardDescription>
-                  We've sent a code to {step.email}
+                  We've sent a code to {typeof step !== 'string' ? step.email : ''}
                 </CardDescription>
               </CardHeader>
               <form onSubmit={handleOtpSubmit}>
                 <CardContent className="pb-4">
-                  <input type="hidden" name="email" value={step.email} />
+                  <input type="hidden" name="email" value={typeof step !== 'string' ? step.email : ''} />
                   <input type="hidden" name="code" value={otp} />
 
                   <div className="flex justify-center">
