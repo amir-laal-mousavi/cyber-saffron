@@ -35,9 +35,36 @@ export default function Landing() {
             <span className="hidden sm:inline">CYBER SAFFRON</span>
           </a>
           <div className="hidden md:flex items-center gap-6 text-sm font-medium">
-            <a href="#products" className="hover:text-primary transition-colors cursor-pointer">Collection</a>
-            <a href="#features" className="hover:text-primary transition-colors cursor-pointer">Process</a>
-            <a href="#trust" className="hover:text-primary transition-colors cursor-pointer">Trust</a>
+            <a 
+              href="#products" 
+              className="hover:text-primary transition-colors cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Collection
+            </a>
+            <a 
+              href="#features" 
+              className="hover:text-primary transition-colors cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Process
+            </a>
+            <a 
+              href="#trust" 
+              className="hover:text-primary transition-colors cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('trust')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Trust
+            </a>
           </div>
           <div className="flex items-center gap-3">
             <Button
