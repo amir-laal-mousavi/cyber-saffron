@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { toast } from "sonner";
+import { NetworkTree } from "@/components/NetworkTree";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export default function Profile() {
   const initializeAgent = useMutation(api.agents.initializeAgent);
   const generateReferralCode = useMutation(api.agents.generateReferralCode);
   const dashboardData = useQuery(api.agents.getDashboardData);
+  const networkTree = useQuery(api.agents.getNetworkTree, { depth: 3 });
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editName, setEditName] = useState("");
@@ -368,6 +370,22 @@ export default function Profile() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Network Hierarchy Visualization */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                My Network Performance Hierarchy
+              </CardTitle>
+              <CardDescription>
+                Interactive visualization of your agent network and their performance
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <NetworkTree data={networkTree} />
+            </CardContent>
+          </Card>
 
           {/* Direct Referrals */}
           <Card>
