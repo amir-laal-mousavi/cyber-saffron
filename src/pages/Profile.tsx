@@ -5,16 +5,17 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
-import { ArrowLeft, Package, User, Wallet, LogOut, Mail, Edit, TrendingUp, Users, DollarSign, Copy, CheckCircle, Wand2, QrCode, Share2, Loader2, Maximize2 } from "lucide-react";
+import { ArrowLeft, Package, User, Wallet, LogOut, Mail, Edit, TrendingUp, Users, DollarSign, Copy, CheckCircle, Wand2, QrCode, Share2, Loader2, Maximize2, Download } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/hooks/use-auth";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { toast } from "sonner";
 import { NetworkTree } from "@/components/NetworkTree";
+import { QRCodeCanvas } from "qrcode.react";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -41,6 +42,7 @@ export default function Profile() {
   const [copiedCode, setCopiedCode] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
   const [isGeneratingCode, setIsGeneratingCode] = useState(false);
+  const qrCodeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -163,6 +165,27 @@ export default function Profile() {
     if (user?.referralCode) {
       setShowQrCode(true);
     }
+  };
+
+  const handleDownloadQrCode = () => {
+    if (!qrCodeRef.current) return;
+    
+    const canvas = qrCodeRef.current.querySelector('canvas');
+    if (!canvas) return;
+
+    // Convert canvas to blob and download
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `cyber-saffron-referral-${user?.referralCode}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast.success("QR code downloaded successfully!");
+    });
   };
 
   const handleSeedTestData = async () => {
@@ -770,28 +793,35 @@ export default function Profile() {
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center py-6">
-            <div className="bg-white p-6 rounded-lg border-4 border-primary/20">
-              <div className="w-64 h-64 bg-muted flex items-center justify-center">
-                <div className="text-center">
-                  <QrCode className="h-16 w-16 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">QR Code Preview</p>
-                  <p className="text-xs text-muted-foreground mt-1 font-mono">
-                    {user?.referralCode}
-                  </p>
-                </div>
-              </div>
+            <div className="bg-white p-6 rounded-lg border-4 border-primary/20 shadow-lg" ref={qrCodeRef}>
+              {user?.referralCode && (
+                <QRCodeCanvas
+                  value={`${window.location.origin}/auth?ref=${user.referralCode}`}
+                  size={256}
+                  level="H"
+                  includeMargin={true}
+                  imageSettings={{
+                    src: "/logo.png",
+                    height: 40,
+                    width: 40,
+                    excavate: true,
+                  }}
+                />
+              )}
             </div>
             <p className="text-sm text-muted-foreground mt-4 text-center">
               Scan to join with referral code: <span className="font-mono font-bold text-primary">{user?.referralCode}</span>
+            </p>
+            <p className="text-xs text-muted-foreground mt-2 text-center max-w-sm">
+              {`${window.location.origin}/auth?ref=${user?.referralCode}`}
             </p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowQrCode(false)}>
               Close
             </Button>
-            <Button onClick={() => {
-              toast.success("QR code download feature coming soon!");
-            }}>
+            <Button onClick={handleDownloadQrCode}>
+              <Download className="h-4 w-4 mr-2" />
               Download QR
             </Button>
           </DialogFooter>
