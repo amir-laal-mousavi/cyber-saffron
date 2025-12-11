@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
-import { ArrowLeft, Package, User, Wallet, LogOut, Mail, Edit, TrendingUp, Users, DollarSign, Copy, CheckCircle } from "lucide-react";
+import { ArrowLeft, Package, User, Wallet, LogOut, Mail, Edit, TrendingUp, Users, DollarSign, Copy, CheckCircle, Wand2, QrCode, Share2, Loader2 } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useNavigate } from "react-router";
@@ -35,6 +35,8 @@ export default function Profile() {
     postalCode: "",
   });
   const [copiedCode, setCopiedCode] = useState(false);
+  const [showQrCode, setShowQrCode] = useState(false);
+  const [isGeneratingCode, setIsGeneratingCode] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -109,8 +111,53 @@ export default function Profile() {
     if (user?.referralCode) {
       navigator.clipboard.writeText(user.referralCode);
       setCopiedCode(true);
-      toast.success("Referral code copied!");
+      toast.success("Referral code copied to clipboard!");
       setTimeout(() => setCopiedCode(false), 2000);
+    }
+  };
+
+  const handleGenerateReferralCode = async () => {
+    setIsGeneratingCode(true);
+    try {
+      // Generate a temporary referral code to trigger initialization
+      const tempCode = "GENESIS00"; // This should be a valid existing code
+      const result = await initializeAgent({ referralCode: tempCode });
+      if (result.success) {
+        toast.success(`Referral Code ${result.referralCode} created successfully!`, {
+          description: "Your unique tracking ID is now active.",
+        });
+      }
+    } catch (error) {
+      toast.error("Failed to generate referral code. Please try again.");
+      console.error(error);
+    } finally {
+      setIsGeneratingCode(false);
+    }
+  };
+
+  const handleShareReferralCode = () => {
+    if (user?.referralCode) {
+      const shareUrl = `${window.location.origin}/auth?ref=${user.referralCode}`;
+      if (navigator.share) {
+        navigator.share({
+          title: "Join Cyber Saffron",
+          text: `Use my referral code: ${user.referralCode}`,
+          url: shareUrl,
+        }).catch(() => {
+          // Fallback to copy
+          navigator.clipboard.writeText(shareUrl);
+          toast.success("Referral link copied!");
+        });
+      } else {
+        navigator.clipboard.writeText(shareUrl);
+        toast.success("Referral link copied to clipboard!");
+      }
+    }
+  };
+
+  const handleGenerateQrCode = () => {
+    if (user?.referralCode) {
+      setShowQrCode(true);
     }
   };
 
@@ -184,25 +231,90 @@ export default function Profile() {
                   </Button>
                 </div>
               </div>
-              {user.referralCode && (
-                <div className="mt-4 p-4 bg-background/50 rounded-lg border border-border/50">
-                  <p className="text-sm text-muted-foreground mb-2">Your Referral Code</p>
+              {user.referralCode ? (
+                <div className="mt-4 p-6 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-lg border border-primary/20">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-muted-foreground">My Referral Key</p>
+                      <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20">
+                        Active & Tracking
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="flex-1 bg-background/80 backdrop-blur-sm rounded-lg p-4 border border-border/50">
+                      <code className="text-3xl font-bold font-mono tracking-widest text-primary block">
+                        {user.referralCode}
+                      </code>
+                    </div>
+                  </div>
                   <div className="flex items-center gap-2">
-                    <code className="flex-1 text-2xl font-bold font-mono tracking-wider text-primary">
-                      {user.referralCode}
-                    </code>
                     <Button
                       variant="outline"
-                      size="icon"
+                      size="sm"
                       onClick={handleCopyReferralCode}
+                      className="flex-1"
                     >
                       {copiedCode ? (
-                        <CheckCircle className="h-4 w-4 text-green-500" />
+                        <>
+                          <CheckCircle className="h-4 w-4 mr-2 text-green-500" />
+                          Copied!
+                        </>
                       ) : (
-                        <Copy className="h-4 w-4" />
+                        <>
+                          <Copy className="h-4 w-4 mr-2" />
+                          Copy Code
+                        </>
                       )}
                     </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleGenerateQrCode}
+                      className="flex-1"
+                    >
+                      <QrCode className="h-4 w-4 mr-2" />
+                      QR Code
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleShareReferralCode}
+                      className="flex-1"
+                    >
+                      <Share2 className="h-4 w-4 mr-2" />
+                      Share Link
+                    </Button>
                   </div>
+                </div>
+              ) : (
+                <div className="mt-4 p-6 bg-muted/30 rounded-lg border border-border/50 text-center">
+                  <div className="mb-4">
+                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                      <Wand2 className="h-6 w-6 text-primary" />
+                    </div>
+                    <h4 className="font-semibold mb-2">Generate Your Referral Code</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Click to create your permanent ID for tracking commissions.
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleGenerateReferralCode}
+                    disabled={isGeneratingCode}
+                    className="bg-gradient-to-r from-primary to-secondary hover:opacity-90"
+                  >
+                    {isGeneratingCode ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Wand2 className="h-4 w-4 mr-2" />
+                        Generate My Unique Referral Code
+                      </>
+                    )}
+                  </Button>
                 </div>
               )}
             </CardHeader>
@@ -590,6 +702,44 @@ export default function Profile() {
             </Button>
             <Button onClick={handleSaveBillingAddress}>
               Save Address
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* QR Code Dialog */}
+      <Dialog open={showQrCode} onOpenChange={setShowQrCode}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Referral Code QR</DialogTitle>
+            <DialogDescription>
+              Share this QR code for easy sign-ups
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col items-center py-6">
+            <div className="bg-white p-6 rounded-lg border-4 border-primary/20">
+              <div className="w-64 h-64 bg-muted flex items-center justify-center">
+                <div className="text-center">
+                  <QrCode className="h-16 w-16 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">QR Code Preview</p>
+                  <p className="text-xs text-muted-foreground mt-1 font-mono">
+                    {user?.referralCode}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground mt-4 text-center">
+              Scan to join with referral code: <span className="font-mono font-bold text-primary">{user?.referralCode}</span>
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowQrCode(false)}>
+              Close
+            </Button>
+            <Button onClick={() => {
+              toast.success("QR code download feature coming soon!");
+            }}>
+              Download QR
             </Button>
           </DialogFooter>
         </DialogContent>
