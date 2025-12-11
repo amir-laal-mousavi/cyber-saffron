@@ -80,68 +80,63 @@ export default function Landing() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-8 md:pt-12 lg:pt-16 pb-16">
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-        <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-primary/20 opacity-20 blur-[100px]"></div>
-        
-        <div className="container px-4 md:px-8 mx-auto">
-          <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="flex flex-col justify-center space-y-8"
-            >
-              <div className="space-y-4">
-                <Badge variant="outline" className="w-fit text-primary border-primary/30 bg-primary/5">
-                  Verified on Blockchain
-                </Badge>
-                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                  The Future of <span className="text-primary">Heritage</span>
-                </h1>
-                <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                  Premium Iranian Saffron verified on Blockchain. Experience the fusion of ancient luxury and modern technology.
-                </p>
-              </div>
-              <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                <Button size="lg" className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20" onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}>
-                  Shop Collection <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-                <Button size="lg" variant="outline" className="border-primary/20 hover:bg-primary/5">
-                  View Smart Contract
-                </Button>
-              </div>
-            </motion.div>
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="mx-auto lg:mr-0 relative"
-            >
-              <div className="relative rounded-2xl border border-border bg-card/50 backdrop-blur-sm p-2 shadow-2xl">
-                <img
-                  alt="Cyber Saffron Box"
-                  className="aspect-square overflow-hidden rounded-xl object-cover object-center"
-                  height="550"
-                  src="https://images.unsplash.com/photo-1599909533730-f9d49c5b5e10?w=800&q=80"
-                  width="550"
-                />
-                <div className="absolute -bottom-6 -left-6 bg-background/90 backdrop-blur border border-border p-4 rounded-lg shadow-lg hidden md:block">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
-                      <ShieldCheck className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">Verification</p>
-                      <p className="font-bold font-mono">100% AUTHENTIC</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+      {/* Hero Section - Glassmorphism Design */}
+      <section className="relative overflow-hidden h-[80vh] min-h-[600px] flex items-center justify-center">
+        {/* Sharp Background Image */}
+        <div 
+          className="absolute inset-0 -z-10 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=90')",
+          }}
+        >
+          {/* Subtle overlay for better text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/30"></div>
         </div>
+        
+        {/* Frosted Glass Content Card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="relative z-10 mx-4 max-w-2xl"
+        >
+          <div 
+            className="backdrop-blur-[20px] bg-white/20 dark:bg-black/30 border border-white/30 dark:border-white/20 rounded-3xl p-8 md:p-12 shadow-2xl"
+            style={{
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+            }}
+          >
+            {/* Content */}
+            <div className="text-center space-y-6">
+              <Badge 
+                variant="outline" 
+                className="w-fit mx-auto bg-white/40 dark:bg-black/40 backdrop-blur-sm border-white/50 text-foreground font-semibold"
+              >
+                Verified on Blockchain
+              </Badge>
+              
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white dark:text-white drop-shadow-lg">
+                Experience Clarity & Focus
+              </h1>
+              
+              <p className="text-lg md:text-xl text-white/90 dark:text-white/90 max-w-xl mx-auto leading-relaxed drop-shadow-md">
+                Our platform brings your goals into sharp focus while filtering out the noise.
+              </p>
+              
+              <div className="pt-4">
+                <Button 
+                  size="lg" 
+                  className="bg-white/90 hover:bg-white text-black font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                  onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  Get Started Now
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </section>
 
       {/* Products Section */}
