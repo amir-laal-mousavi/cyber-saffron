@@ -108,7 +108,7 @@ export default function NetworkVisualization() {
           }}
           transition={{ type: "tween", duration: 0.1 }}
         >
-          <div className="min-h-full flex items-start justify-center pt-12">
+          <div className="min-h-full min-w-full flex items-center justify-center">
             {networkTree ? (
               <NetworkTree data={networkTree} />
             ) : (
