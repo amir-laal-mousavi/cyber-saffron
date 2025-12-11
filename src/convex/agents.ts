@@ -283,3 +283,114 @@ export const getNetworkTree = query({
     return await buildTree(userId, 0);
   },
 });
+
+// Seed test network data for visualization
+export const seedTestNetwork = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const user = await ctx.db.get(userId);
+    if (!user) throw new Error("User not found");
+
+    // Ensure current user has agent setup
+    if (!user.referralCode) {
+      const code = createRandomReferralCode();
+      await ctx.db.patch(userId, {
+        role: "agent",
+        referralCode: code,
+        agentTier: "platinum",
+        totalSales: 15000,
+        totalCommission: 3750,
+        pendingPayout: 500,
+      });
+
+      // Create network entry for root
+      await ctx.db.insert("agentNetwork", {
+        agentId: userId,
+        parentAgentId: undefined,
+        level: 0,
+        totalDownline: 0,
+        directReferrals: 0,
+      });
+    }
+
+    // Create test sub-agents (Level 1)
+    const level1Agents = [
+      { name: "John Smith", tier: "gold" as const, sales: 8500 },
+      { name: "Sarah Lee", tier: "silver" as const, sales: 4200 },
+      { name: "Mike Johnson", tier: "gold" as const, sales: 7800 },
+    ];
+
+    for (const agentData of level1Agents) {
+      // Check if already exists
+      const existing = await ctx.db
+        .query("users")
+        .filter((q) => q.and(
+          q.eq(q.field("name"), agentData.name),
+          q.eq(q.field("referredBy"), userId)
+        ))
+        .first();
+
+      if (!existing) {
+        const code = createRandomReferralCode();
+        const agentId = await ctx.db.insert("users", {
+          name: agentData.name,
+          email: `${agentData.name.toLowerCase().replace(" ", ".")}@test.com`,
+          role: "agent",
+          referralCode: code,
+          referredBy: userId,
+          agentTier: agentData.tier,
+          totalSales: agentData.sales,
+          totalCommission: agentData.sales * getCommissionRate(agentData.tier),
+          pendingPayout: 0,
+        });
+
+        await ctx.db.insert("agentNetwork", {
+          agentId,
+          parentAgentId: userId,
+          level: 1,
+          totalDownline: 0,
+          directReferrals: 0,
+        });
+
+        // Create Level 2 sub-agents for first two Level 1 agents
+        if (agentData.name === "John Smith" || agentData.name === "Sarah Lee") {
+          const level2Count = agentData.name === "John Smith" ? 3 : 2;
+          const level2Names = agentData.name === "John Smith" 
+            ? ["Emily Davis", "Robert Brown", "Lisa Wilson"]
+            : ["Tom Anderson", "Jessica White"];
+
+          for (let i = 0; i < level2Count; i++) {
+            const l2Code = createRandomReferralCode();
+            const l2Sales = 1000 + Math.floor(Math.random() * 2000);
+            const l2Tier = l2Sales > 1500 ? "silver" : "bronze";
+            
+            const l2AgentId = await ctx.db.insert("users", {
+              name: level2Names[i],
+              email: `${level2Names[i].toLowerCase().replace(" ", ".")}@test.com`,
+              role: "agent",
+              referralCode: l2Code,
+              referredBy: agentId,
+              agentTier: l2Tier as "bronze" | "silver",
+              totalSales: l2Sales,
+              totalCommission: l2Sales * getCommissionRate(l2Tier as "bronze" | "silver"),
+              pendingPayout: 0,
+            });
+
+            await ctx.db.insert("agentNetwork", {
+              agentId: l2AgentId,
+              parentAgentId: agentId,
+              level: 2,
+              totalDownline: 0,
+              directReferrals: 0,
+            });
+          }
+        }
+      }
+    }
+
+    return { success: true, message: "Test network data seeded" };
+  },
+});

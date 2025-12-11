@@ -26,6 +26,7 @@ export default function Profile() {
   const generateReferralCode = useMutation(api.agents.generateReferralCode);
   const dashboardData = useQuery(api.agents.getDashboardData);
   const networkTree = useQuery(api.agents.getNetworkTree, { depth: 3 });
+  const seedTestNetwork = useMutation(api.agents.seedTestNetwork);
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editName, setEditName] = useState("");
@@ -161,6 +162,18 @@ export default function Profile() {
   const handleGenerateQrCode = () => {
     if (user?.referralCode) {
       setShowQrCode(true);
+    }
+  };
+
+  const handleSeedTestData = async () => {
+    try {
+      await seedTestNetwork({});
+      toast.success("Test network data added!", {
+        description: "Refresh to see the network tree visualization",
+      });
+    } catch (error) {
+      toast.error("Failed to seed test data");
+      console.error(error);
     }
   };
 
@@ -374,13 +387,24 @@ export default function Profile() {
           {/* Network Hierarchy Visualization */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                My Network Performance Hierarchy
-              </CardTitle>
-              <CardDescription>
-                Interactive visualization of your agent network and their performance
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    My Network Performance Hierarchy
+                  </CardTitle>
+                  <CardDescription>
+                    Interactive visualization of your agent network and their performance
+                  </CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSeedTestData}
+                >
+                  Add Test Data
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <NetworkTree data={networkTree} />
