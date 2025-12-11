@@ -80,7 +80,7 @@ export default function Landing() {
         </div>
       </nav>
 
-      {/* Hero Section - Glassmorphism Design */}
+      {/* Hero Section */}
       <section className="relative overflow-hidden h-[80vh] min-h-[600px] flex items-center justify-center">
         {/* Full Width/Height Saffron Background Image */}
         <div 
@@ -92,52 +92,41 @@ export default function Landing() {
             backgroundRepeat: "no-repeat",
           }}
         >
-          {/* Subtle overlay for better text contrast */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/30"></div>
+          {/* Overlay for better text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50"></div>
         </div>
         
-        {/* Frosted Glass Content Card */}
+        {/* Text Content Directly on Background */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative z-10 mx-4 max-w-2xl"
+          className="relative z-10 text-center space-y-6 px-4 max-w-4xl mx-auto"
         >
-          <div 
-            className="backdrop-blur-[20px] bg-white/20 dark:bg-black/30 border border-white/30 dark:border-white/20 rounded-3xl p-8 md:p-12 shadow-2xl"
-            style={{
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-            }}
+          <Badge 
+            variant="outline" 
+            className="w-fit mx-auto bg-white/20 backdrop-blur-sm border-white/40 text-white font-semibold"
           >
-            {/* Content */}
-            <div className="text-center space-y-6">
-              <Badge 
-                variant="outline" 
-                className="w-fit mx-auto bg-white/40 dark:bg-black/40 backdrop-blur-sm border-white/50 text-foreground font-semibold"
-              >
-                Verified on Blockchain
-              </Badge>
-              
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white dark:text-white drop-shadow-lg">
-                Experience Clarity & Focus
-              </h1>
-              
-              <p className="text-lg md:text-xl text-white/90 dark:text-white/90 max-w-xl mx-auto leading-relaxed drop-shadow-md">
-                Our platform brings your goals into sharp focus while filtering out the noise.
-              </p>
-              
-              <div className="pt-4">
-                <Button 
-                  size="lg" 
-                  className="bg-white/90 hover:bg-white text-black font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
-                  onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
-                >
-                  Get Started Now
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </div>
-            </div>
+            Verified on Blockchain
+          </Badge>
+          
+          <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight text-white drop-shadow-2xl">
+            Experience Clarity & Focus
+          </h1>
+          
+          <p className="text-lg md:text-xl lg:text-2xl text-white/95 max-w-2xl mx-auto leading-relaxed drop-shadow-lg">
+            Our platform brings your goals into sharp focus while filtering out the noise.
+          </p>
+          
+          <div className="pt-4">
+            <Button 
+              size="lg" 
+              className="bg-white hover:bg-white/90 text-black font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
+              onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              Get Started Now
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
           </div>
         </motion.div>
       </section>
