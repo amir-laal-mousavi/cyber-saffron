@@ -18,6 +18,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { ArrowRight, Loader2, Mail, UserX } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 interface AuthProps {
   redirectAfterAuth?: string;
@@ -37,7 +39,14 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [storedReferralCode, setStoredReferralCode] = useState<string>(""); // Store referral code for later use
+  const [storedReferralCode, setStoredReferralCode] = useState<string>("");
+  const [validatingReferral, setValidatingReferral] = useState(false);
+
+  // Query to verify referral code - only runs when we have a code to check
+  const referralVerification = useQuery(
+    api.agents.verifyReferralCode,
+    referralCode.length >= 6 ? { code: referralCode } : "skip"
+  );
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
@@ -77,16 +86,39 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
 
   const handleReferralValidation = async () => {
     if (referralCode.length < 6) {
-      setReferralError("Please enter a valid referral code");
+      setReferralError("Referral code must be at least 6 characters");
       return false;
     }
     
-    // TODO: Add backend validation via Convex action
-    // const isValid = await validateReferralCode({ code: referralCode });
-    // For now, accept any code with 6+ characters
+    setValidatingReferral(true);
+    setReferralError(null);
     
-    setStoredReferralCode(referralCode);
-    return true;
+    try {
+      // Wait a moment for the query to complete
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      if (!referralVerification) {
+        setReferralError("Unable to verify referral code. Please try again.");
+        setValidatingReferral(false);
+        return false;
+      }
+      
+      if (!referralVerification.valid) {
+        setReferralError("Invalid referral code. Please check and try again.");
+        setValidatingReferral(false);
+        return false;
+      }
+      
+      // Success - store the code
+      setStoredReferralCode(referralCode);
+      setValidatingReferral(false);
+      return true;
+    } catch (error) {
+      console.error("Referral validation error:", error);
+      setReferralError("Failed to validate referral code. Please try again.");
+      setValidatingReferral(false);
+      return false;
+    }
   };
 
   const handleLoginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
