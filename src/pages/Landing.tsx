@@ -83,6 +83,8 @@ export default function Landing() {
             size="icon"
             className="md:hidden"
             onClick={() => setMobileMenuOpen(true)}
+            aria-expanded={mobileMenuOpen}
+            aria-label="Toggle navigation menu"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="4" x2="20" y1="12" y2="12" />
@@ -630,7 +632,7 @@ export default function Landing() {
 
       {/* Mobile Navigation Drawer */}
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-        <SheetContent side="left" className="w-[280px]">
+        <SheetContent side="left" className="w-[280px] z-[9999]">
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               <Hexagon className="h-5 w-5 text-primary" />
