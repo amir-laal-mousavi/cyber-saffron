@@ -63,11 +63,19 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     const emailValue = email.trim().toLowerCase();
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Call backend to check if email exists
+      const response = await fetch(`${import.meta.env.VITE_CONVEX_URL}/api/query`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          path: "users:checkEmailExists",
+          args: { email: emailValue },
+          format: "json"
+        })
+      });
       
-      // This should be replaced with: const exists = await checkUserExists({ email: emailValue });
-      const exists = false; // Placeholder - will be replaced with actual backend check
+      const result = await response.json();
+      const exists = result?.value?.exists || false;
       
       setUserExists(exists);
       

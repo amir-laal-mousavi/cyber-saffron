@@ -20,6 +20,18 @@ export const currentUser = query({
   },
 });
 
+export const checkEmailExists = query({
+  args: { email: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("email", (q) => q.eq("email", args.email.toLowerCase()))
+      .first();
+    
+    return { exists: !!user };
+  },
+});
+
 /**
  * Use this function internally to get the current user data. Remember to handle the null user case.
  * @param ctx
