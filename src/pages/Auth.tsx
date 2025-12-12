@@ -365,7 +365,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                           setReferralCode(e.target.value.toUpperCase());
                           setReferralError(null);
                         }}
-                        disabled={isLoading}
+                        disabled={isLoading || validatingReferral}
                         required
                         maxLength={8}
                       />
@@ -379,12 +379,12 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                     <Button
                       type="submit"
                       className="w-full"
-                      disabled={isLoading || referralCode.length < 6}
+                      disabled={isLoading || validatingReferral || referralCode.length < 6}
                     >
-                      {isLoading ? (
+                      {isLoading || validatingReferral ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Validating...
+                          {validatingReferral ? "Validating..." : "Sending code..."}
                         </>
                       ) : (
                         <>
@@ -406,6 +406,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                         setStep("emailCheck");
                         setEmail("");
                         setReferralCode("");
+                        setReferralError(null);
                       }}
                     >
                       ← Use different email
@@ -414,69 +415,6 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                   <p className="mt-4 text-xs text-muted-foreground text-center">
                     Don't have a referral code? Contact an existing agent.
                   </p>
-                </CardContent>
-              </form>
-            </>
-          ) : step === "otp" ? (
-            <>
-              <CardHeader className="text-center">
-              <div className="flex justify-center">
-                    <img
-                      src="./logo.svg"
-                      alt="Lock Icon"
-                      width={64}
-                      height={64}
-                      className="rounded-lg mb-4 mt-4 cursor-pointer"
-                      onClick={() => navigate("/")}
-                    />
-                  </div>
-                <CardTitle className="text-xl">Get Started</CardTitle>
-                <CardDescription>
-                  Enter your email to log in or sign up
-                </CardDescription>
-              </CardHeader>
-              <form onSubmit={handleLoginSubmit}>
-                <CardContent>
-                  
-                  <div className="relative flex items-center gap-2">
-                    <div className="relative flex-1">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        name="email"
-                        placeholder="name@example.com"
-                        type="email"
-                        className="pl-9"
-                        disabled={isLoading}
-                        required
-                      />
-                    </div>
-                    <Button
-                      type="submit"
-                      variant="outline"
-                      size="icon"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <ArrowRight className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                  {error && (
-                    <p className="mt-2 text-sm text-red-500">{error}</p>
-                  )}
-                  
-                  <div className="mt-4">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      className="w-full text-xs"
-                      onClick={() => setStep("emailCheck")}
-                    >
-                      ← Back to referral code
-                    </Button>
-                  </div>
                 </CardContent>
               </form>
             </>
