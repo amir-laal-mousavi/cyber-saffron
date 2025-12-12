@@ -84,10 +84,6 @@
     cursor: pointer;
   }
   
-  /* Smooth scrolling with offset for fixed header */
-  html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 4rem; /* 64px offset for fixed navbar (h-16 = 4rem) */
-  }
+}
 =======
 }
