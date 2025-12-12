@@ -53,8 +53,6 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     
     const emailValue = email.trim().toLowerCase();
     
-    // TODO: Replace with actual Convex query to check if user exists
-    // For now, simulate the check
     try {
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -65,10 +63,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       setUserExists(exists);
       
       if (exists) {
-        // User exists - go to login
         setStep("login");
       } else {
-        // New user - go to signup with referral code requirement
         setStep("signup");
       }
       setEmailCheckLoading(false);
@@ -98,7 +94,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     setIsLoading(true);
     setError(null);
     try {
-      const formData = new FormData(event.currentTarget);
+      const formData = new FormData();
       formData.set("email", email);
       await signIn("email-otp", formData);
       setOtpEmail(email);
@@ -127,7 +123,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     setIsLoading(true);
     setError(null);
     try {
-      const formData = new FormData(event.currentTarget);
+      const formData = new FormData();
       formData.set("email", email);
       // Store referral code for post-auth initialization
       sessionStorage.setItem("pendingReferralCode", storedReferralCode);
@@ -151,7 +147,9 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     setIsLoading(true);
     setError(null);
     try {
-      const formData = new FormData(event.currentTarget);
+      const formData = new FormData();
+      formData.set("email", otpEmail);
+      formData.set("code", otp);
       await signIn("email-otp", formData);
 
       console.log("signed in");
