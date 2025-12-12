@@ -1,0 +1,1 @@
+- src/index.css: Corrected syntax errors by removing merge conflict markers and extraneous closing braces, ensuring proper structure for the `@layer base` block.

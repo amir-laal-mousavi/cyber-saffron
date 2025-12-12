@@ -72,14 +72,14 @@
   --ring: oklch(0.70 0.22 220);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
+  button:not([disabled]),
+  [role="button"]:not([disabled]) {
+    cursor: pointer;
   }
 }
+=======
+}
+=======
 =======
   button:not([disabled]),
   [role="button"]:not([disabled]) {
