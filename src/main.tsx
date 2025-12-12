@@ -13,6 +13,7 @@ import '@rainbow-me/rainbowkit/styles.css';
 import { config } from './lib/wagmi';
 import "./index.css";
 import "./types/global.d.ts";
+import { AgentInitializer } from "@/components/AgentInitializer";
 
 // Lazy load route components for better code splitting
 const Landing = lazy(() => import("./pages/Landing.tsx"));
@@ -66,6 +67,7 @@ createRoot(document.getElementById("root")!).render(
         <QueryClientProvider client={queryClient}>
           <RainbowKitProvider>
             <ConvexAuthProvider client={convex}>
+              <AgentInitializer />
               <BrowserRouter>
                 <RouteSyncer />
                 <Suspense fallback={<RouteLoading />}>
