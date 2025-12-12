@@ -44,7 +44,7 @@ export function CheckoutDialog({
   totalEth,
   totalUsd,
 }: CheckoutDialogProps) {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, connector } = useAccount();
   const { user } = useAuth();
   const { sendTransaction, data: hash, isPending: isSending, error: txError } = useSendTransaction();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
@@ -145,6 +145,10 @@ export function CheckoutDialog({
     }
 
     try {
+      // Display connected wallet info
+      const walletName = connector?.name || 'Wallet';
+      toast.info(`Processing payment via ${walletName}...`);
+      
       // Send ETH transaction to a designated wallet
       const MERCHANT_WALLET = "0x742d35Cc6634C0532925a3b844Bc9e7595f3f8a0"; // Replace with actual merchant wallet
       
@@ -291,6 +295,17 @@ export function CheckoutDialog({
                 </p>
                 <p className="text-sm text-muted-foreground">{shippingInfo.country}</p>
               </div>
+              {isConnected && connector && (
+                <div className="bg-primary/5 rounded-lg p-3 border border-primary/20">
+                  <p className="text-xs text-muted-foreground mb-1">Connected Wallet</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium">{connector.name}</p>
+                    <p className="text-xs font-mono text-muted-foreground">
+                      {address?.slice(0, 6)}...{address?.slice(-4)}
+                    </p>
+                  </div>
+                </div>
+              )}
               {!isConnected && (
                 <p className="text-sm text-destructive">
                   Please connect your wallet to complete payment
