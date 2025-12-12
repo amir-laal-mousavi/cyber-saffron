@@ -1,9 +1,11 @@
 import { motion } from "framer-motion";
-import { ChevronDown, ChevronRight, DollarSign, ShoppingCart, User } from "lucide-react";
+import { ChevronDown, ChevronRight, DollarSign, ShoppingCart, User, List, Network } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface NetworkNode {
   id: string;
@@ -154,7 +156,70 @@ interface NetworkTreeProps {
   data: NetworkNode | null;
 }
 
+function NetworkListView({ node, isRoot = false }: { node: NetworkNode; isRoot?: boolean }) {
+  const getTierColor = (tier: string) => {
+    switch (tier) {
+      case "platinum": return "bg-purple-500/10 text-purple-500 border-purple-500/20";
+      case "gold": return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20";
+      case "silver": return "bg-gray-500/10 text-gray-500 border-gray-500/20";
+      default: return "bg-orange-500/10 text-orange-500 border-orange-500/20";
+    }
+  };
+
+  const hasChildren = node.children && node.children.length > 0;
+
+  return (
+    <div className="space-y-2">
+      <Card className={`p-4 ${isRoot ? "bg-gradient-to-br from-primary/5 to-secondary/5 border-primary/30" : ""}`}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <User className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-bold text-sm">{node.name}</p>
+              {isRoot && (
+                <Badge variant="outline" className="mt-1 text-xs bg-green-500/10 text-green-500 border-green-500/20">
+                  You
+                </Badge>
+              )}
+            </div>
+          </div>
+          <div className="text-right">
+            <Badge variant="outline" className={getTierColor(node.tier)}>
+              {node.tier.toUpperCase()}
+            </Badge>
+            <p className="text-xs text-muted-foreground mt-1">
+              ${node.totalSales.toFixed(0)}
+            </p>
+          </div>
+        </div>
+      </Card>
+
+      {hasChildren && (
+        <Accordion type="single" collapsible className="ml-6">
+          <AccordionItem value="children" className="border-l-2 border-primary/20 pl-4">
+            <AccordionTrigger className="text-sm font-medium">
+              {node.children.length} Direct Referral{node.children.length !== 1 ? 's' : ''}
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="space-y-2 mt-2">
+                {node.children.map((child) => (
+                  <NetworkListView key={child.id} node={child} />
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      )}
+    </div>
+  );
+}
+
 export function NetworkTree({ data }: NetworkTreeProps) {
+  const isMobile = useIsMobile();
+  const [viewMode, setViewMode] = useState<"tree" | "list">(isMobile ? "list" : "tree");
+
   if (!data) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -168,10 +233,43 @@ export function NetworkTree({ data }: NetworkTreeProps) {
   }
 
   return (
-    <div className="w-full overflow-x-auto">
-      <div className="min-w-max p-8 flex justify-center">
-        <NetworkTreeNode node={data} isRoot={true} />
+    <div className="w-full">
+      {/* View Toggle */}
+      <div className="flex justify-end mb-4">
+        <div className="inline-flex rounded-lg border border-border p-1">
+          <Button
+            variant={viewMode === "tree" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setViewMode("tree")}
+            className="gap-2"
+          >
+            <Network className="h-4 w-4" />
+            <span className="hidden sm:inline">Tree</span>
+          </Button>
+          <Button
+            variant={viewMode === "list" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setViewMode("list")}
+            className="gap-2"
+          >
+            <List className="h-4 w-4" />
+            <span className="hidden sm:inline">List</span>
+          </Button>
+        </div>
       </div>
+
+      {/* Content */}
+      {viewMode === "list" ? (
+        <div className="max-w-2xl mx-auto">
+          <NetworkListView node={data} isRoot={true} />
+        </div>
+      ) : (
+        <div className="w-full overflow-x-auto touch-pan-x">
+          <div className="min-w-max p-8 flex justify-center">
+            <NetworkTreeNode node={data} isRoot={true} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

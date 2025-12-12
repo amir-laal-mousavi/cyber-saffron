@@ -6,6 +6,7 @@ import { ArrowRight, Box, CheckCircle, Hexagon, ShieldCheck, ShoppingBag, Shoppi
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useEffect, useState } from "react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useNavigate } from "react-router";
 import { CartDrawer } from "@/components/CartDrawer";
@@ -17,6 +18,7 @@ export default function Landing() {
   const cart = useQuery(api.cart.get);
   const navigate = useNavigate();
   const [cartOpen, setCartOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isAuthenticated } = useAuth();
   const [activeSection, setActiveSection] = useState<string>("");
 
@@ -74,6 +76,22 @@ export default function Landing() {
             <Hexagon className="h-6 w-6 text-primary fill-primary/20 shrink-0" />
             <span className="hidden sm:inline">CYBER SAFFRON</span>
           </a>
+          
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setMobileMenuOpen(true)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="4" x2="20" y1="12" y2="12" />
+              <line x1="4" x2="20" y1="6" y2="6" />
+              <line x1="4" x2="20" y1="18" y2="18" />
+            </svg>
+          </Button>
+
+          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6 text-sm font-medium">
             <a 
               href="#about" 
@@ -609,6 +627,97 @@ export default function Landing() {
           </div>
         </div>
       </footer>
+
+      {/* Mobile Navigation Drawer */}
+      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <SheetContent side="left" className="w-[280px]">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2">
+              <Hexagon className="h-5 w-5 text-primary" />
+              CYBER SAFFRON
+            </SheetTitle>
+          </SheetHeader>
+          <div className="flex flex-col gap-4 mt-8">
+            <a 
+              href="#about" 
+              className={`text-lg font-medium hover:text-primary transition-colors cursor-pointer py-2 ${
+                activeSection === "about" ? "text-primary font-semibold" : ""
+              }`}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection('about');
+                setMobileMenuOpen(false);
+              }}
+            >
+              About
+            </a>
+            <a 
+              href="#products" 
+              className={`text-lg font-medium hover:text-primary transition-colors cursor-pointer py-2 ${
+                activeSection === "products" ? "text-primary font-semibold" : ""
+              }`}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection('products');
+                setMobileMenuOpen(false);
+              }}
+            >
+              Collection
+            </a>
+            <a 
+              href="#features" 
+              className={`text-lg font-medium hover:text-primary transition-colors cursor-pointer py-2 ${
+                activeSection === "features" ? "text-primary font-semibold" : ""
+              }`}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection('features');
+                setMobileMenuOpen(false);
+              }}
+            >
+              Process
+            </a>
+            <a 
+              href="#trust" 
+              className={`text-lg font-medium hover:text-primary transition-colors cursor-pointer py-2 ${
+                activeSection === "trust" ? "text-primary font-semibold" : ""
+              }`}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection('trust');
+                setMobileMenuOpen(false);
+              }}
+            >
+              Trust
+            </a>
+            <div className="pt-4 border-t border-border">
+              {isAuthenticated ? (
+                <Button
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={() => {
+                    navigate("/profile");
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <User className="h-5 w-5 mr-2" />
+                  Profile
+                </Button>
+              ) : (
+                <Button
+                  className="w-full"
+                  onClick={() => {
+                    navigate("/auth");
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  Sign In
+                </Button>
+              )}
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* Cart Drawer */}
       <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
