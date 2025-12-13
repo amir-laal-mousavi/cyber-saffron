@@ -1,1 +1,1 @@
-openssl genrsa 2048 | openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt
+npx convex run debug_env:checkEnv
