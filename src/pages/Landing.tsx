@@ -131,21 +131,14 @@ export default function Landing() {
               )}
             </Button>
             {isAuthenticated ? (
-              <div className="flex items-center gap-2">
-                <ConnectButton 
-                  showBalance={false}
-                  accountStatus="avatar"
-                  chainStatus="none"
-                />
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => navigate("/profile")}
-                  title="Profile"
-                >
-                  <User className="h-5 w-5" />
-                </Button>
-              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => navigate("/profile")}
+                title="Profile"
+              >
+                <User className="h-5 w-5" />
+              </Button>
             ) : (
               <Button
                 onClick={() => navigate("/auth")}
