@@ -19,6 +19,7 @@ import { QRCodeCanvas } from "qrcode.react";
 import { AgentHeader } from "@/components/profile/AgentHeader";
 import { PerformanceMetrics } from "@/components/profile/PerformanceMetrics";
 import { OrderHistory } from "@/components/profile/OrderHistory";
+import { SaffronLoader } from "@/components/SaffronLoader";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -127,11 +128,7 @@ export default function Profile() {
   };
 
   if (isLoading || !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Loading dashboard...</div>
-      </div>
-    );
+    return <SaffronLoader />;
   }
 
   return (
