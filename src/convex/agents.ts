@@ -44,6 +44,53 @@ export const verifyReferralCode = query({
   },
 });
 
+// Calculate user level based on longest chain rule (max depth)
+async function calculateUserLevel(ctx: any, userId: any): Promise<number> {
+  // Get all direct children (sub-users)
+  const children = await ctx.db
+    .query("users")
+    .withIndex("by_referrer", (q: any) => q.eq("referredBy", userId))
+    .collect();
+
+  // If no children, level is 0
+  if (children.length === 0) {
+    return 0;
+  }
+
+  // Find the child with the highest level
+  let maxChildLevel = 0;
+  for (const child of children) {
+    const childLevel = child.userLevel ?? 0;
+    if (childLevel > maxChildLevel) {
+      maxChildLevel = childLevel;
+    }
+  }
+
+  // User's level = highest child level + 1, capped at 14
+  const calculatedLevel = Math.min(maxChildLevel + 1, 14);
+  return calculatedLevel;
+}
+
+// Recursively update user level and propagate upstream
+async function updateUserLevelUpstream(ctx: any, userId: any): Promise<void> {
+  const user = await ctx.db.get(userId);
+  if (!user) return;
+
+  // Calculate new level
+  const newLevel = await calculateUserLevel(ctx, userId);
+  const currentLevel = user.userLevel ?? 0;
+
+  // Only update if level changed
+  if (newLevel !== currentLevel) {
+    await ctx.db.patch(userId, { userLevel: newLevel });
+
+    // If this user has a parent, propagate the update upstream
+    if (user.referredBy) {
+      await updateUserLevelUpstream(ctx, user.referredBy);
+    }
+  }
+}
+
 // Initialize new agent with referral code
 export const initializeAgent = mutation({
   args: {
@@ -86,7 +133,7 @@ export const initializeAgent = mutation({
         .first();
     }
 
-    // Update user to agent
+    // Update user to agent with initial level 0
     await ctx.db.patch(userId, {
       role: "agent",
       referralCode: newReferralCode,
@@ -95,6 +142,7 @@ export const initializeAgent = mutation({
       totalSales: 0,
       totalCommission: 0,
       pendingPayout: 0,
+      userLevel: 0, // New users start at level 0
     });
 
     // Create network entry
@@ -118,6 +166,9 @@ export const initializeAgent = mutation({
         totalDownline: referrerNetwork.totalDownline + 1,
       });
     }
+
+    // Propagate level update upstream to all parents
+    await updateUserLevelUpstream(ctx, referrer._id);
 
     return { success: true, referralCode: newReferralCode };
   },
@@ -153,6 +204,9 @@ export const generateReferralCode = mutation({
         .first();
     }
 
+    // Calculate initial user level
+    const initialLevel = await calculateUserLevel(ctx, userId);
+
     // Update user with new referral code and initialize as agent if not already
     await ctx.db.patch(userId, {
       role: user.role || "agent",
@@ -161,6 +215,7 @@ export const generateReferralCode = mutation({
       totalSales: user.totalSales || 0,
       totalCommission: user.totalCommission || 0,
       pendingPayout: user.pendingPayout || 0,
+      userLevel: initialLevel,
     });
 
     // Create network entry if doesn't exist
@@ -177,6 +232,11 @@ export const generateReferralCode = mutation({
         totalDownline: 0,
         directReferrals: 0,
       });
+    }
+
+    // If user has a parent, update their level
+    if (user.referredBy) {
+      await updateUserLevelUpstream(ctx, user.referredBy);
     }
 
     return { success: true, referralCode: newReferralCode };
@@ -228,6 +288,7 @@ export const getDashboardData = query({
         totalSales: user.totalSales || 0,
         totalCommission: user.totalCommission || 0,
         pendingPayout: user.pendingPayout || 0,
+        userLevel: user.userLevel ?? 0, // Include user level in dashboard
       },
       network: {
         directReferrals: network?.directReferrals || 0,
@@ -240,6 +301,7 @@ export const getDashboardData = query({
         tier: r.agentTier || "bronze",
         totalSales: r.totalSales || 0,
         joinedAt: r._creationTime,
+        userLevel: r.userLevel ?? 0, // Include user level for each referral
       })),
       recentCommissions: commissions,
       recentOrders: orders,

@@ -53,6 +53,9 @@ const schema = defineSchema(
       totalCommission: v.optional(v.number()), // Total commission earned
       pendingPayout: v.optional(v.number()), // Pending commission payout
       
+      // User Level Tracking (Affiliate Network Depth)
+      userLevel: v.optional(v.number()), // Max depth of downline (0-14), default 0
+      
       billingAddress: v.optional(v.object({
         name: v.string(),
         address: v.string(),
