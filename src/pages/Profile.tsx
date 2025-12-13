@@ -58,10 +58,10 @@ export default function Profile() {
 
   const getTierColor = (tier?: string) => {
     switch (tier) {
-      case "platinum": return "bg-purple-500/10 text-purple-500 border-purple-500/20";
       case "gold": return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20";
       case "silver": return "bg-gray-500/10 text-gray-500 border-gray-500/20";
-      default: return "bg-orange-500/10 text-orange-500 border-orange-500/20";
+      case "bronze": return "bg-orange-500/10 text-orange-500 border-orange-500/20";
+      default: return "bg-purple-500/10 text-purple-500 border-purple-500/20"; // platinum
     }
   };
 

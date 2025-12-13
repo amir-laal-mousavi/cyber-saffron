@@ -14,19 +14,19 @@ function createRandomReferralCode(): string {
 
 // Get agent tier based on total sales
 function calculateAgentTier(totalSales: number): "bronze" | "silver" | "gold" | "platinum" {
-  if (totalSales >= 50000) return "platinum";
-  if (totalSales >= 20000) return "gold";
-  if (totalSales >= 5000) return "silver";
-  return "bronze";
+  if (totalSales >= 50000) return "gold";
+  if (totalSales >= 20000) return "silver";
+  if (totalSales >= 5000) return "bronze";
+  return "platinum";
 }
 
 // Get commission percentage based on tier
 export function getCommissionRate(tier: "bronze" | "silver" | "gold" | "platinum"): number {
   const rates = {
-    bronze: 0.10,    // 10%
-    silver: 0.15,    // 15%
-    gold: 0.20,      // 20%
-    platinum: 0.25,  // 25%
+    gold: 0.25,      // 25% - highest
+    silver: 0.20,    // 20%
+    bronze: 0.15,    // 15%
+    platinum: 0.10,  // 10% - entry level
   };
   return rates[tier];
 }
@@ -389,7 +389,7 @@ export const seedTestNetwork = mutation({
       await ctx.db.patch(userId, {
         role: "agent",
         referralCode: code,
-        agentTier: "platinum",
+        agentTier: "gold",
         totalSales: 15000,
         totalCommission: 3750,
         pendingPayout: 500,
@@ -408,9 +408,9 @@ export const seedTestNetwork = mutation({
 
     // Create test sub-agents (Level 1) - these will start with userLevel 0
     const level1Agents = [
-      { name: "John Smith", tier: "gold" as const, sales: 8500 },
-      { name: "Sarah Lee", tier: "silver" as const, sales: 4200 },
-      { name: "Mike Johnson", tier: "gold" as const, sales: 7800 },
+      { name: "John Smith", tier: "silver" as const, sales: 8500 },
+      { name: "Sarah Lee", tier: "bronze" as const, sales: 4200 },
+      { name: "Mike Johnson", tier: "silver" as const, sales: 7800 },
     ];
 
     const level1AgentIds: any[] = [];
