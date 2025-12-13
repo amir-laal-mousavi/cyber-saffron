@@ -69,9 +69,13 @@ function GlobalInteractionLoader() {
       // Check for submit buttons
       const button = target.closest('button');
       if (button && button.type === 'submit') {
-        const overlay = document.getElementById('global-loader-overlay');
-        if (overlay) {
-          overlay.style.display = 'flex';
+        // Only show loader if the button is inside a form
+        // This prevents the loader from triggering on buttons that just open dialogs/drawers
+        if (button.closest('form')) {
+          const overlay = document.getElementById('global-loader-overlay');
+          if (overlay) {
+            overlay.style.display = 'flex';
+          }
         }
       }
     };
