@@ -2,19 +2,20 @@ import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { Infer, v } from "convex/values";
 
-// Agent tier system for commission structure
+// Agent tier system based on network depth (User Level)
+// Gold = Level 14 (Highest), Silver = Level 13, Bronze = Levels 5-12, Starter = Levels 0-4
 export const AGENT_TIERS = {
-  BRONZE: "bronze",
-  SILVER: "silver",
-  GOLD: "gold",
-  PLATINUM: "platinum",
+  GOLD: "gold",      // Level 14
+  SILVER: "silver",  // Level 13
+  BRONZE: "bronze",  // Levels 5-12
+  STARTER: "starter", // Levels 0-4
 } as const;
 
 export const agentTierValidator = v.union(
-  v.literal(AGENT_TIERS.BRONZE),
-  v.literal(AGENT_TIERS.SILVER),
   v.literal(AGENT_TIERS.GOLD),
-  v.literal(AGENT_TIERS.PLATINUM),
+  v.literal(AGENT_TIERS.SILVER),
+  v.literal(AGENT_TIERS.BRONZE),
+  v.literal(AGENT_TIERS.STARTER),
 );
 export type AgentTier = Infer<typeof agentTierValidator>;
 

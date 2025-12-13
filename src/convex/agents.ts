@@ -12,21 +12,22 @@ function createRandomReferralCode(): string {
   return code;
 }
 
-// Get agent tier based on total sales
-function calculateAgentTier(totalSales: number): "bronze" | "silver" | "gold" | "platinum" {
-  if (totalSales >= 50000) return "gold";
-  if (totalSales >= 20000) return "silver";
-  if (totalSales >= 5000) return "bronze";
-  return "platinum";
+// Calculate agent tier based purely on user level (network depth)
+// Gold = Level 14, Silver = Level 13, Bronze = Levels 5-12, Starter = Levels 0-4
+function calculateAgentTierFromLevel(userLevel: number): "gold" | "silver" | "bronze" | "starter" {
+  if (userLevel >= 14) return "gold";
+  if (userLevel >= 13) return "silver";
+  if (userLevel >= 5) return "bronze";
+  return "starter";
 }
 
-// Get commission percentage based on tier
-export function getCommissionRate(tier: "bronze" | "silver" | "gold" | "platinum"): number {
+// Get commission percentage based on tier (derived from level)
+export function getCommissionRate(tier: "gold" | "silver" | "bronze" | "starter"): number {
   const rates = {
-    gold: 0.25,      // 25% - highest
-    silver: 0.20,    // 20%
-    bronze: 0.15,    // 15%
-    platinum: 0.10,  // 10% - entry level
+    gold: 0.25,      // 25% - Level 14 (highest)
+    silver: 0.20,    // 20% - Level 13
+    bronze: 0.15,    // 15% - Levels 5-12
+    starter: 0.10,   // 10% - Levels 0-4
   };
   return rates[tier];
 }
@@ -71,18 +72,24 @@ async function calculateUserLevel(ctx: any, userId: any): Promise<number> {
   return calculatedLevel;
 }
 
-// Recursively update user level and propagate upstream
+// Recursively update user level and tier, propagating upstream
 async function updateUserLevelUpstream(ctx: any, userId: any): Promise<void> {
   const user = await ctx.db.get(userId);
   if (!user) return;
 
-  // Calculate new level
+  // Calculate new level based on max depth of downline
   const newLevel = await calculateUserLevel(ctx, userId);
   const currentLevel = user.userLevel ?? 0;
 
   // Only update if level changed
   if (newLevel !== currentLevel) {
-    await ctx.db.patch(userId, { userLevel: newLevel });
+    // Calculate tier based on the new level
+    const newTier = calculateAgentTierFromLevel(newLevel);
+    
+    await ctx.db.patch(userId, { 
+      userLevel: newLevel,
+      agentTier: newTier 
+    });
 
     // If this user has a parent, propagate the update upstream
     if (user.referredBy) {
@@ -133,12 +140,12 @@ export const initializeAgent = mutation({
         .first();
     }
 
-    // Update user to agent with initial level 0
+    // Update user to agent with initial level 0 and starter tier
     await ctx.db.patch(userId, {
       role: "agent",
       referralCode: newReferralCode,
       referredBy: referrer._id,
-      agentTier: "bronze",
+      agentTier: "starter", // Level 0 = Starter tier
       totalSales: 0,
       totalCommission: 0,
       pendingPayout: 0,
@@ -206,12 +213,13 @@ export const generateReferralCode = mutation({
 
     // Calculate initial user level
     const initialLevel = await calculateUserLevel(ctx, userId);
+    const initialTier = calculateAgentTierFromLevel(initialLevel);
 
     // Update user with new referral code and initialize as agent if not already
     await ctx.db.patch(userId, {
       role: user.role || "agent",
       referralCode: newReferralCode,
-      agentTier: user.agentTier || "bronze",
+      agentTier: initialTier,
       totalSales: user.totalSales || 0,
       totalCommission: user.totalCommission || 0,
       pendingPayout: user.pendingPayout || 0,
@@ -389,7 +397,7 @@ export const seedTestNetwork = mutation({
       await ctx.db.patch(userId, {
         role: "agent",
         referralCode: code,
-        agentTier: "gold",
+        agentTier: "starter", // Will be updated based on calculated level
         totalSales: 15000,
         totalCommission: 3750,
         pendingPayout: 500,
@@ -406,11 +414,11 @@ export const seedTestNetwork = mutation({
       });
     }
 
-    // Create test sub-agents (Level 1) - these will start with userLevel 0
+    // Create test sub-agents (Level 1) - these will start with userLevel 0 and starter tier
     const level1Agents = [
-      { name: "John Smith", tier: "silver" as const, sales: 8500 },
-      { name: "Sarah Lee", tier: "bronze" as const, sales: 4200 },
-      { name: "Mike Johnson", tier: "silver" as const, sales: 7800 },
+      { name: "John Smith", sales: 8500 },
+      { name: "Sarah Lee", sales: 4200 },
+      { name: "Mike Johnson", sales: 7800 },
     ];
 
     const level1AgentIds: any[] = [];
@@ -423,9 +431,9 @@ export const seedTestNetwork = mutation({
         role: "agent",
         referralCode: code,
         referredBy: userId,
-        agentTier: agentData.tier,
+        agentTier: "starter", // Will be updated based on calculated level
         totalSales: agentData.sales,
-        totalCommission: agentData.sales * getCommissionRate(agentData.tier),
+        totalCommission: agentData.sales * getCommissionRate("starter"),
         pendingPayout: 0,
         userLevel: 0, // Will be updated after children are added
       });
@@ -452,7 +460,6 @@ export const seedTestNetwork = mutation({
         for (let i = 0; i < level2Count; i++) {
           const l2Code = createRandomReferralCode();
           const l2Sales = 1000 + Math.floor(Math.random() * 2000);
-          const l2Tier = l2Sales > 1500 ? "silver" : "bronze";
           
           const l2AgentId = await ctx.db.insert("users", {
             name: level2Names[i],
@@ -460,9 +467,9 @@ export const seedTestNetwork = mutation({
             role: "agent",
             referralCode: l2Code,
             referredBy: l1Agent.id,
-            agentTier: l2Tier as "bronze" | "silver",
+            agentTier: "starter", // Leaf nodes start at level 0 = starter tier
             totalSales: l2Sales,
-            totalCommission: l2Sales * getCommissionRate(l2Tier as "bronze" | "silver"),
+            totalCommission: l2Sales * getCommissionRate("starter"),
             pendingPayout: 0,
             userLevel: 0, // Leaf nodes have level 0
           });
