@@ -346,7 +346,7 @@ export const getNetworkTree = query({
   },
 });
 
-// Seed test network data for visualization
+// Seed test network data for visualization with proper user level calculation
 export const seedTestNetwork = mutation({
   args: {},
   handler: async (ctx) => {
@@ -356,7 +356,34 @@ export const seedTestNetwork = mutation({
     const user = await ctx.db.get(userId);
     if (!user) throw new Error("User not found");
 
-    // Ensure current user has agent setup
+    // Delete existing test data to start fresh
+    const existingTestUsers = await ctx.db
+      .query("users")
+      .filter((q) => q.or(
+        q.eq(q.field("name"), "John Smith"),
+        q.eq(q.field("name"), "Sarah Lee"),
+        q.eq(q.field("name"), "Mike Johnson"),
+        q.eq(q.field("name"), "Emily Davis"),
+        q.eq(q.field("name"), "Robert Brown"),
+        q.eq(q.field("name"), "Lisa Wilson"),
+        q.eq(q.field("name"), "Tom Anderson"),
+        q.eq(q.field("name"), "Jessica White")
+      ))
+      .collect();
+
+    // Delete test users and their network entries
+    for (const testUser of existingTestUsers) {
+      const networkEntry = await ctx.db
+        .query("agentNetwork")
+        .withIndex("by_agent", (q) => q.eq("agentId", testUser._id))
+        .first();
+      if (networkEntry) {
+        await ctx.db.delete(networkEntry._id);
+      }
+      await ctx.db.delete(testUser._id);
+    }
+
+    // Ensure current user has agent setup with initial level 0
     if (!user.referralCode) {
       const code = createRandomReferralCode();
       await ctx.db.patch(userId, {
@@ -366,6 +393,7 @@ export const seedTestNetwork = mutation({
         totalSales: 15000,
         totalCommission: 3750,
         pendingPayout: 500,
+        userLevel: 0, // Will be updated after children are added
       });
 
       // Create network entry for root
@@ -378,81 +406,84 @@ export const seedTestNetwork = mutation({
       });
     }
 
-    // Create test sub-agents (Level 1)
+    // Create test sub-agents (Level 1) - these will start with userLevel 0
     const level1Agents = [
       { name: "John Smith", tier: "gold" as const, sales: 8500 },
       { name: "Sarah Lee", tier: "silver" as const, sales: 4200 },
       { name: "Mike Johnson", tier: "gold" as const, sales: 7800 },
     ];
 
+    const level1AgentIds: any[] = [];
+
     for (const agentData of level1Agents) {
-      // Check if already exists
-      const existing = await ctx.db
-        .query("users")
-        .filter((q) => q.and(
-          q.eq(q.field("name"), agentData.name),
-          q.eq(q.field("referredBy"), userId)
-        ))
-        .first();
+      const code = createRandomReferralCode();
+      const agentId = await ctx.db.insert("users", {
+        name: agentData.name,
+        email: `${agentData.name.toLowerCase().replace(" ", ".")}@test.com`,
+        role: "agent",
+        referralCode: code,
+        referredBy: userId,
+        agentTier: agentData.tier,
+        totalSales: agentData.sales,
+        totalCommission: agentData.sales * getCommissionRate(agentData.tier),
+        pendingPayout: 0,
+        userLevel: 0, // Will be updated after children are added
+      });
 
-      if (!existing) {
-        const code = createRandomReferralCode();
-        const agentId = await ctx.db.insert("users", {
-          name: agentData.name,
-          email: `${agentData.name.toLowerCase().replace(" ", ".")}@test.com`,
-          role: "agent",
-          referralCode: code,
-          referredBy: userId,
-          agentTier: agentData.tier,
-          totalSales: agentData.sales,
-          totalCommission: agentData.sales * getCommissionRate(agentData.tier),
-          pendingPayout: 0,
-        });
+      level1AgentIds.push({ id: agentId, name: agentData.name });
 
-        await ctx.db.insert("agentNetwork", {
-          agentId,
-          parentAgentId: userId,
-          level: 1,
-          totalDownline: 0,
-          directReferrals: 0,
-        });
+      await ctx.db.insert("agentNetwork", {
+        agentId,
+        parentAgentId: userId,
+        level: 1,
+        totalDownline: 0,
+        directReferrals: 0,
+      });
+    }
 
-        // Create Level 2 sub-agents for first two Level 1 agents
-        if (agentData.name === "John Smith" || agentData.name === "Sarah Lee") {
-          const level2Count = agentData.name === "John Smith" ? 3 : 2;
-          const level2Names = agentData.name === "John Smith" 
-            ? ["Emily Davis", "Robert Brown", "Lisa Wilson"]
-            : ["Tom Anderson", "Jessica White"];
+    // Create Level 2 sub-agents for first two Level 1 agents
+    for (const l1Agent of level1AgentIds) {
+      if (l1Agent.name === "John Smith" || l1Agent.name === "Sarah Lee") {
+        const level2Count = l1Agent.name === "John Smith" ? 3 : 2;
+        const level2Names = l1Agent.name === "John Smith" 
+          ? ["Emily Davis", "Robert Brown", "Lisa Wilson"]
+          : ["Tom Anderson", "Jessica White"];
 
-          for (let i = 0; i < level2Count; i++) {
-            const l2Code = createRandomReferralCode();
-            const l2Sales = 1000 + Math.floor(Math.random() * 2000);
-            const l2Tier = l2Sales > 1500 ? "silver" : "bronze";
-            
-            const l2AgentId = await ctx.db.insert("users", {
-              name: level2Names[i],
-              email: `${level2Names[i].toLowerCase().replace(" ", ".")}@test.com`,
-              role: "agent",
-              referralCode: l2Code,
-              referredBy: agentId,
-              agentTier: l2Tier as "bronze" | "silver",
-              totalSales: l2Sales,
-              totalCommission: l2Sales * getCommissionRate(l2Tier as "bronze" | "silver"),
-              pendingPayout: 0,
-            });
+        for (let i = 0; i < level2Count; i++) {
+          const l2Code = createRandomReferralCode();
+          const l2Sales = 1000 + Math.floor(Math.random() * 2000);
+          const l2Tier = l2Sales > 1500 ? "silver" : "bronze";
+          
+          const l2AgentId = await ctx.db.insert("users", {
+            name: level2Names[i],
+            email: `${level2Names[i].toLowerCase().replace(" ", ".")}@test.com`,
+            role: "agent",
+            referralCode: l2Code,
+            referredBy: l1Agent.id,
+            agentTier: l2Tier as "bronze" | "silver",
+            totalSales: l2Sales,
+            totalCommission: l2Sales * getCommissionRate(l2Tier as "bronze" | "silver"),
+            pendingPayout: 0,
+            userLevel: 0, // Leaf nodes have level 0
+          });
 
-            await ctx.db.insert("agentNetwork", {
-              agentId: l2AgentId,
-              parentAgentId: agentId,
-              level: 2,
-              totalDownline: 0,
-              directReferrals: 0,
-            });
-          }
+          await ctx.db.insert("agentNetwork", {
+            agentId: l2AgentId,
+            parentAgentId: l1Agent.id,
+            level: 2,
+            totalDownline: 0,
+            directReferrals: 0,
+          });
         }
+
+        // After adding children, update the Level 1 agent's userLevel
+        await updateUserLevelUpstream(ctx, l1Agent.id);
       }
     }
 
-    return { success: true, message: "Test network data seeded" };
+    // Finally, update the root user's level based on all children
+    await updateUserLevelUpstream(ctx, userId);
+
+    return { success: true, message: "Test network data seeded with proper user levels" };
   },
 });
