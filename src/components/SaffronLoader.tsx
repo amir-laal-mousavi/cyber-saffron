@@ -1,8 +1,12 @@
 import { motion } from "framer-motion";
 
-export function SaffronLoader() {
+interface SaffronLoaderProps {
+  className?: string;
+}
+
+export function SaffronLoader({ className }: SaffronLoaderProps) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className={`flex items-center justify-center ${className || ''}`}>
       <div className="relative">
         {/* Outer glow ring */}
         <motion.div

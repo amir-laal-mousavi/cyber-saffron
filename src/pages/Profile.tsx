@@ -1,48 +1,37 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
-import { ArrowLeft, Package, Wallet, Download, Users, Maximize2, TrendingUp, DollarSign, User, Edit } from "lucide-react";
+import { ArrowLeft, Package, Wallet, Users, Maximize2, TrendingUp, DollarSign, User, Edit } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/hooks/use-auth";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { toast } from "sonner";
 import { NetworkTree } from "@/components/NetworkTree";
-import { QRCodeCanvas } from "qrcode.react";
 import { AgentHeader } from "@/components/profile/AgentHeader";
 import { PerformanceMetrics } from "@/components/profile/PerformanceMetrics";
 import { OrderHistory } from "@/components/profile/OrderHistory";
 import { SaffronLoader } from "@/components/SaffronLoader";
+import { BillingAddressDialog } from "@/components/profile/BillingAddressDialog";
+import { QrCodeDialog } from "@/components/profile/QrCodeDialog";
+import { EditProfileDialog } from "@/components/profile/EditProfileDialog";
 
 export default function Profile() {
   const navigate = useNavigate();
   const { isLoading, isAuthenticated, user, signOut } = useAuth();
   const { address, isConnected } = useAccount();
   const orders = useQuery(api.orders.list);
-  const updateProfile = useMutation(api.users.updateProfile);
   const dashboardData = useQuery(api.agents.getDashboardData);
   const networkTree = useQuery(api.agents.getNetworkTree, { depth: 3 });
   const seedTestNetwork = useMutation(api.agents.seedTestNetwork);
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [editName, setEditName] = useState("");
   const [billingDialogOpen, setBillingDialogOpen] = useState(false);
-  const [billingAddress, setBillingAddress] = useState({
-    name: "",
-    address: "",
-    city: "",
-    country: "",
-    postalCode: "",
-  });
   const [showQrCode, setShowQrCode] = useState(false);
-  const qrCodeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -50,60 +39,9 @@ export default function Profile() {
     }
   }, [isLoading, isAuthenticated, navigate]);
 
-  useEffect(() => {
-    if (user?.name) {
-      setEditName(user.name);
-    }
-    if (user?.billingAddress) {
-      setBillingAddress(user.billingAddress);
-    }
-  }, [user]);
-
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
-  };
-
-  const handleSaveProfile = async () => {
-    try {
-      await updateProfile({ name: editName });
-      toast.success("Profile updated successfully!");
-      setEditDialogOpen(false);
-    } catch (error) {
-      toast.error("Failed to update profile");
-      console.error(error);
-    }
-  };
-
-  const handleSaveBillingAddress = async () => {
-    try {
-      await updateProfile({ billingAddress });
-      toast.success("Billing address updated successfully!");
-      setBillingDialogOpen(false);
-    } catch (error) {
-      toast.error("Failed to update billing address");
-      console.error(error);
-    }
-  };
-
-  const handleDownloadQrCode = () => {
-    if (!qrCodeRef.current) return;
-    
-    const canvas = qrCodeRef.current.querySelector('canvas');
-    if (!canvas) return;
-
-    canvas.toBlob((blob) => {
-      if (!blob) return;
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `cyber-saffron-referral-${user?.referralCode}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      toast.success("QR code downloaded successfully!");
-    });
   };
 
   const handleSeedTestData = async () => {
@@ -128,7 +66,11 @@ export default function Profile() {
   };
 
   if (isLoading || !user) {
-    return <SaffronLoader />;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <SaffronLoader />
+      </div>
+    );
   }
 
   return (
@@ -379,162 +321,23 @@ export default function Profile() {
         </motion.div>
       </div>
 
-      {/* Billing Address Dialog */}
-      <Dialog open={billingDialogOpen} onOpenChange={setBillingDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Billing Address</DialogTitle>
-            <DialogDescription>
-              Update your default billing and shipping address
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="billing-name">Full Name</Label>
-              <Input
-                id="billing-name"
-                value={billingAddress.name}
-                onChange={(e) => setBillingAddress({ ...billingAddress, name: e.target.value })}
-                placeholder="Enter full name"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="billing-address">Street Address</Label>
-              <Input
-                id="billing-address"
-                value={billingAddress.address}
-                onChange={(e) => setBillingAddress({ ...billingAddress, address: e.target.value })}
-                placeholder="Enter street address"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="billing-city">City</Label>
-                <Input
-                  id="billing-city"
-                  value={billingAddress.city}
-                  onChange={(e) => setBillingAddress({ ...billingAddress, city: e.target.value })}
-                  placeholder="Enter city"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="billing-postal">Postal Code</Label>
-                <Input
-                  id="billing-postal"
-                  value={billingAddress.postalCode}
-                  onChange={(e) => setBillingAddress({ ...billingAddress, postalCode: e.target.value })}
-                  placeholder="Enter postal code"
-                />
-              </div>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="billing-country">Country</Label>
-              <Input
-                id="billing-country"
-                value={billingAddress.country}
-                onChange={(e) => setBillingAddress({ ...billingAddress, country: e.target.value })}
-                placeholder="Enter country"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setBillingDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSaveBillingAddress}>
-              Save Address
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <BillingAddressDialog 
+        open={billingDialogOpen} 
+        onOpenChange={setBillingDialogOpen}
+        initialAddress={user.billingAddress}
+      />
 
-      {/* QR Code Dialog */}
-      <Dialog open={showQrCode} onOpenChange={setShowQrCode}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Referral Code QR</DialogTitle>
-            <DialogDescription>
-              Share this QR code for easy sign-ups
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col items-center py-6">
-            <div className="bg-white p-6 rounded-lg border-4 border-primary/20 shadow-lg" ref={qrCodeRef}>
-              {user?.referralCode && (
-                <QRCodeCanvas
-                  value={`${window.location.origin}/auth?ref=${user.referralCode}`}
-                  size={256}
-                  level="H"
-                  includeMargin={true}
-                  imageSettings={{
-                    src: "/logo.png",
-                    height: 40,
-                    width: 40,
-                    excavate: true,
-                  }}
-                />
-              )}
-            </div>
-            <p className="text-sm text-muted-foreground mt-4 text-center">
-              Scan to join with referral code: <span className="font-mono font-bold text-primary">{user?.referralCode}</span>
-            </p>
-            <p className="text-xs text-muted-foreground mt-2 text-center max-w-sm">
-              {`${window.location.origin}/auth?ref=${user?.referralCode}`}
-            </p>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowQrCode(false)}>
-              Close
-            </Button>
-            <Button onClick={handleDownloadQrCode}>
-              <Download className="h-4 w-4 mr-2" />
-              Download QR
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <QrCodeDialog 
+        open={showQrCode} 
+        onOpenChange={setShowQrCode}
+        referralCode={user.referralCode}
+      />
 
-      {/* Edit Profile Dialog */}
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Profile</DialogTitle>
-            <DialogDescription>
-              Update your profile information
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                placeholder="Enter your name"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                value={user.email || ""}
-                disabled
-                className="opacity-50"
-              />
-              <p className="text-xs text-muted-foreground">
-                Email cannot be changed
-              </p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSaveProfile}>
-              Save Changes
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <EditProfileDialog 
+        open={editDialogOpen} 
+        onOpenChange={setEditDialogOpen}
+        user={user}
+      />
     </div>
   );
 }
