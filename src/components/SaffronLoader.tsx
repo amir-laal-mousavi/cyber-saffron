@@ -8,13 +8,13 @@ export function SaffronLoader() {
         <motion.div
           className="absolute inset-0 rounded-full"
           style={{
-            width: "200px",
-            height: "200px",
-            background: "radial-gradient(circle, rgba(255, 140, 0, 0.3) 0%, transparent 70%)",
+            width: "120px",
+            height: "120px",
+            background: "radial-gradient(circle, rgba(100, 180, 255, 0.2) 0%, transparent 70%)",
           }}
           animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.5, 0.8, 0.5],
+            scale: [1, 1.3, 1],
+            opacity: [0.4, 0.7, 0.4],
           }}
           transition={{
             duration: 2,
@@ -23,17 +23,17 @@ export function SaffronLoader() {
           }}
         />
 
-        {/* Saffron flower petals */}
+        {/* Simplified Saffron Glyph Icon */}
         <svg
-          width="200"
-          height="200"
-          viewBox="0 0 200 200"
+          width="120"
+          height="120"
+          viewBox="0 0 120 120"
           className="relative z-10"
         >
-          {/* Center stigma (the valuable saffron threads) */}
+          {/* Center stigma threads - simplified as 3 lines */}
           <motion.g
             animate={{
-              opacity: [0.6, 1, 0.6],
+              opacity: [0.7, 1, 0.7],
             }}
             transition={{
               duration: 1.5,
@@ -41,30 +41,32 @@ export function SaffronLoader() {
               ease: "easeInOut",
             }}
           >
-            <line x1="100" y1="100" x2="100" y2="70" stroke="#FF4500" strokeWidth="3" strokeLinecap="round" />
-            <line x1="100" y1="100" x2="95" y2="72" stroke="#FF4500" strokeWidth="3" strokeLinecap="round" />
-            <line x1="100" y1="100" x2="105" y2="72" stroke="#FF4500" strokeWidth="3" strokeLinecap="round" />
+            <line x1="60" y1="60" x2="60" y2="35" stroke="currentColor" strokeWidth="4" strokeLinecap="round" className="text-primary" />
+            <line x1="60" y1="60" x2="52" y2="37" stroke="currentColor" strokeWidth="4" strokeLinecap="round" className="text-primary" />
+            <line x1="60" y1="60" x2="68" y2="37" stroke="currentColor" strokeWidth="4" strokeLinecap="round" className="text-primary" />
           </motion.g>
 
-          {/* Petals - 6 petals in a circular pattern */}
+          {/* Simplified petals - 6 petal shapes in circular pattern */}
           {[0, 1, 2, 3, 4, 5].map((i) => {
             const angle = (i * 60 * Math.PI) / 180;
-            const x = 100 + Math.cos(angle) * 40;
-            const y = 100 + Math.sin(angle) * 40;
+            const x = 60 + Math.cos(angle) * 28;
+            const y = 60 + Math.sin(angle) * 28;
             
             return (
               <motion.ellipse
                 key={i}
                 cx={x}
                 cy={y}
-                rx="25"
-                ry="35"
-                fill="url(#petalGradient)"
+                rx="12"
+                ry="20"
+                fill="currentColor"
+                className="text-secondary"
+                opacity="0.8"
                 transform={`rotate(${i * 60} ${x} ${y})`}
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{
-                  scale: [0.8, 1, 0.8],
-                  opacity: [0.7, 1, 0.7],
+                  scale: [0.85, 1, 0.85],
+                  opacity: [0.6, 0.9, 0.6],
                 }}
                 transition={{
                   duration: 2,
@@ -76,36 +78,28 @@ export function SaffronLoader() {
             );
           })}
 
-          {/* Gradient definitions */}
-          <defs>
-            <radialGradient id="petalGradient">
-              <stop offset="0%" stopColor="#E6B3FF" />
-              <stop offset="50%" stopColor="#B366FF" />
-              <stop offset="100%" stopColor="#8000FF" />
-            </radialGradient>
-          </defs>
+          {/* Center dot */}
+          <motion.circle
+            cx="60"
+            cy="60"
+            r="6"
+            fill="currentColor"
+            className="text-primary"
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.8, 1, 0.8],
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
         </svg>
-
-        {/* Pulsing center glow */}
-        <motion.div
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(255, 69, 0, 0.6) 0%, transparent 70%)",
-          }}
-          animate={{
-            scale: [1, 1.5, 1],
-            opacity: [0.8, 0.3, 0.8],
-          }}
-          transition={{
-            duration: 1.5,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
 
         {/* Loading text */}
         <motion.p
-          className="text-center mt-8 text-muted-foreground font-medium"
+          className="text-center mt-6 text-muted-foreground font-medium text-sm"
           animate={{
             opacity: [0.5, 1, 0.5],
           }}
@@ -115,7 +109,7 @@ export function SaffronLoader() {
             ease: "easeInOut",
           }}
         >
-          Loading dashboard...
+          Loading...
         </motion.p>
       </div>
     </div>
