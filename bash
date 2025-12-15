@@ -1,2 +1,1 @@
-   npx convex run key_generator:generate
-   
+pnpm add @walletconnect/ethereum-provider
