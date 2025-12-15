@@ -19,6 +19,7 @@ import type * as http from "../http.js";
 import type * as orders from "../orders.js";
 import type * as products from "../products.js";
 import type * as products_extended from "../products_extended.js";
+import type * as resetPasswordAction from "../resetPasswordAction.js";
 import type * as sendPasswordReset from "../sendPasswordReset.js";
 import type * as users from "../users.js";
 
@@ -40,6 +41,7 @@ declare const fullApi: ApiFromModules<{
   orders: typeof orders;
   products: typeof products;
   products_extended: typeof products_extended;
+  resetPasswordAction: typeof resetPasswordAction;
   sendPasswordReset: typeof sendPasswordReset;
   users: typeof users;
 }>;

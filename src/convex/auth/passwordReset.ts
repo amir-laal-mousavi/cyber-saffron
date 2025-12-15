@@ -133,16 +133,10 @@ export const resetPassword = internalMutation({
       throw new Error("Password account not found");
     }
 
-    // Hash the new password using the same method as signup
-    const crypto = await import("crypto");
-    const salt = crypto.randomBytes(16).toString("hex");
-    const hash = crypto
-      .pbkdf2Sync(args.newPassword, salt, 100000, 64, "sha512")
-      .toString("hex");
-
+    // The newPassword comes pre-hashed from the action
     // Update the auth account with new password hash
     await ctx.db.patch(authAccount._id, {
-      secret: `${salt}:${hash}`,
+      secret: args.newPassword,
     });
 
     // Mark token as used

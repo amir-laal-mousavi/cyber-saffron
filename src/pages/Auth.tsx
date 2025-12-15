@@ -264,11 +264,11 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       }
 
       // Reset password
-      const resetResponse = await fetch(`${import.meta.env.VITE_CONVEX_URL}/api/mutation`, {
+      const resetResponse = await fetch(`${import.meta.env.VITE_CONVEX_URL}/api/action`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          path: "auth/passwordReset:resetPassword",
+          path: "resetPasswordAction:resetPassword",
           args: { email: email.toLowerCase(), token: resetToken, newPassword: password },
           format: "json"
         })
