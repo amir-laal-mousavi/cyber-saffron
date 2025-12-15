@@ -8,6 +8,13 @@ export const list = query({
   },
 });
 
+export const get = query({
+  args: { id: v.id("courses") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.id);
+  },
+});
+
 export const seed = mutation({
   args: {},
   handler: async (ctx) => {

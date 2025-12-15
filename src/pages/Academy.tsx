@@ -30,7 +30,6 @@ export default function Academy() {
   const navigate = useNavigate();
   const courses = useQuery(api.academy.list);
   const seedCourses = useMutation(api.academy.seed);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -119,7 +118,7 @@ export default function Academy() {
             >
               <Card 
                 className="h-full flex flex-col overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all duration-500 group cursor-pointer" 
-                onClick={() => setSelectedCourse(course)}
+                onClick={() => navigate(`/academy/${course._id}`)}
               >
                 <div className="aspect-video relative overflow-hidden">
                   <div className="absolute inset-0 bg-primary/20 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 mix-blend-overlay" />
@@ -141,7 +140,14 @@ export default function Academy() {
                   </CardDescription>
                 </CardHeader>
                 <CardFooter className="pt-0 mt-auto pb-6 px-6">
-                  <Button variant="secondary" className="w-full bg-secondary/50 hover:bg-primary hover:text-primary-foreground transition-all duration-300 group-hover:shadow-md">
+                  <Button 
+                    variant="secondary" 
+                    className="w-full bg-secondary/50 hover:bg-primary hover:text-primary-foreground transition-all duration-300 group-hover:shadow-md"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/academy/${course._id}`);
+                    }}
+                  >
                     Read Article
                     <ArrowLeft className="w-4 h-4 ml-2 rotate-180 transition-transform group-hover:translate-x-1" />
                   </Button>
@@ -150,73 +156,6 @@ export default function Academy() {
             </motion.div>
           ))}
         </div>
-
-        {/* Course Detail Dialog */}
-        <Dialog open={!!selectedCourse} onOpenChange={(open) => !open && setSelectedCourse(null)}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0 border-primary/20 bg-background/95 backdrop-blur-xl shadow-2xl shadow-black/50">
-            {selectedCourse && (
-              <>
-                <div className="relative h-56 md:h-72 w-full shrink-0 overflow-hidden">
-                  <img 
-                    src={selectedCourse.image} 
-                    alt={selectedCourse.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-                  <div className="absolute bottom-0 left-0 p-8 w-full">
-                    <Badge className="mb-3 bg-primary text-primary-foreground hover:bg-primary/90 border-none px-3 py-1">
-                      {selectedCourse.category}
-                    </Badge>
-                    <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight drop-shadow-sm">
-                      {selectedCourse.title}
-                    </h2>
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white rounded-full backdrop-blur-sm transition-colors"
-                    onClick={() => setSelectedCourse(null)}
-                  >
-                    <X className="h-5 w-5" />
-                  </Button>
-                </div>
-
-                <ScrollArea className="flex-1 p-8 md:p-10">
-                  <div className="prose prose-invert max-w-none mx-auto">
-                    <p className="text-xl text-muted-foreground mb-8 font-medium leading-relaxed border-l-4 border-primary/50 pl-6 italic">
-                      {selectedCourse.description}
-                    </p>
-                    <div className="text-foreground/90 leading-relaxed text-lg">
-                      <ReactMarkdown 
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                          h1: ({node, ...props}: any) => <h1 className="text-3xl font-bold mt-8 mb-4 text-primary" {...props} />,
-                          h2: ({node, ...props}: any) => <h2 className="text-2xl font-bold mt-8 mb-4 text-foreground border-b border-border/50 pb-2" {...props} />,
-                          h3: ({node, ...props}: any) => <h3 className="text-xl font-bold mt-6 mb-3 text-foreground" {...props} />,
-                          p: ({node, ...props}: any) => <p className="mb-4 leading-relaxed" {...props} />,
-                          ul: ({node, ...props}: any) => <ul className="list-disc list-inside mb-6 space-y-2 ml-4" {...props} />,
-                          ol: ({node, ...props}: any) => <ol className="list-decimal list-inside mb-6 space-y-2 ml-4" {...props} />,
-                          li: ({node, ...props}: any) => <li className="pl-2" {...props} />,
-                          strong: ({node, ...props}: any) => <strong className="font-bold text-primary/90" {...props} />,
-                          em: ({node, ...props}: any) => <em className="italic text-foreground/80" {...props} />,
-                          blockquote: ({node, ...props}: any) => <blockquote className="border-l-4 border-primary/50 pl-6 italic my-6 py-2 bg-primary/5 rounded-r-lg text-muted-foreground" {...props} />,
-                          code: ({node, ...props}: any) => <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-primary" {...props} />,
-                        }}
-                      >
-                        {selectedCourse.content}
-                      </ReactMarkdown>
-                    </div>
-                    
-                    <div className="mt-12 pt-8 border-t border-border flex justify-between items-center text-sm text-muted-foreground">
-                      <span>Cyber Saffron Academy</span>
-                      <span>Verified Content</span>
-                    </div>
-                  </div>
-                </ScrollArea>
-              </>
-            )}
-          </DialogContent>
-        </Dialog>
       </main>
     </div>
   );
