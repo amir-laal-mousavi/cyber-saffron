@@ -62,7 +62,7 @@ export default function Academy() {
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
               <Input 
                 placeholder="Search articles..." 
-                className="pl-10 bg-secondary/50 border-transparent focus:border-primary/50 focus:bg-background transition-all duration-300" 
+                className="pl-10 bg-background border-border/50 focus:border-primary/50 transition-all duration-300" 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
