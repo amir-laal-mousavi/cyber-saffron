@@ -12,12 +12,14 @@ import type * as agents from "../agents.js";
 import type * as auth from "../auth.js";
 import type * as auth_emailOtp from "../auth/emailOtp.js";
 import type * as auth_password from "../auth/password.js";
+import type * as auth_passwordReset from "../auth/passwordReset.js";
 import type * as cart from "../cart.js";
 import type * as debug_auth from "../debug_auth.js";
 import type * as http from "../http.js";
 import type * as orders from "../orders.js";
 import type * as products from "../products.js";
 import type * as products_extended from "../products_extended.js";
+import type * as sendPasswordReset from "../sendPasswordReset.js";
 import type * as users from "../users.js";
 
 import type {
@@ -31,12 +33,14 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   "auth/emailOtp": typeof auth_emailOtp;
   "auth/password": typeof auth_password;
+  "auth/passwordReset": typeof auth_passwordReset;
   cart: typeof cart;
   debug_auth: typeof debug_auth;
   http: typeof http;
   orders: typeof orders;
   products: typeof products;
   products_extended: typeof products_extended;
+  sendPasswordReset: typeof sendPasswordReset;
   users: typeof users;
 }>;
 

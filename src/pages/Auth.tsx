@@ -24,11 +24,12 @@ interface AuthProps {
 function Auth({ redirectAfterAuth }: AuthProps = {}) {
   const { isLoading: authLoading, isAuthenticated, signIn } = useAuth();
   const navigate = useNavigate();
-  type AuthStep = "emailCheck" | "login" | "signup";
+  type AuthStep = "emailCheck" | "login" | "signup" | "forgotPassword" | "resetPassword";
   const [step, setStep] = useState<AuthStep>("emailCheck");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [resetToken, setResetToken] = useState("");
   const [referralCode, setReferralCode] = useState("");
   const [referralError, setReferralError] = useState<string | null>(null);
   const [emailCheckLoading, setEmailCheckLoading] = useState(false);
@@ -192,6 +193,104 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     }
   };
 
+  const handleForgotPassword = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_CONVEX_URL}/api/action`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          path: "sendPasswordReset:sendResetEmail",
+          args: { email: email.toLowerCase() },
+          format: "json"
+        })
+      });
+
+      if (response.ok) {
+        setStep("resetPassword");
+        setIsLoading(false);
+      } else {
+        throw new Error("Failed to send reset email");
+      }
+    } catch (error) {
+      console.error("Password reset error:", error);
+      setError("Failed to send reset email. Please try again.");
+      setIsLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    
+    if (!password || password.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
+    }
+    
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (!resetToken || resetToken.length !== 6) {
+      setError("Please enter the 6-digit code from your email");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Verify token first
+      const verifyResponse = await fetch(`${import.meta.env.VITE_CONVEX_URL}/api/query`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          path: "auth/passwordReset:verifyResetToken",
+          args: { email: email.toLowerCase(), token: resetToken },
+          format: "json"
+        })
+      });
+
+      const verifyResult = await verifyResponse.json();
+      
+      if (!verifyResult?.value?.valid) {
+        setError(verifyResult?.value?.expired ? "Reset code has expired" : "Invalid reset code");
+        setIsLoading(false);
+        return;
+      }
+
+      // Reset password
+      const resetResponse = await fetch(`${import.meta.env.VITE_CONVEX_URL}/api/mutation`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          path: "auth/passwordReset:resetPassword",
+          args: { email: email.toLowerCase(), token: resetToken, newPassword: password },
+          format: "json"
+        })
+      });
+
+      if (resetResponse.ok) {
+        // Auto-login with new password
+        const formData = new FormData();
+        formData.set("email", email);
+        formData.set("password", password);
+        formData.set("flow", "signIn");
+        await signIn("password", formData);
+      } else {
+        throw new Error("Failed to reset password");
+      }
+    } catch (error) {
+      console.error("Password reset error:", error);
+      setError("Failed to reset password. Please try again.");
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Auth Content */}
@@ -308,7 +407,19 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                   {error && (
                     <p className="mt-2 text-sm text-red-500">{error}</p>
                   )}
-                  <div className="mt-4">
+                  <div className="mt-4 space-y-2">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="w-full text-xs"
+                      onClick={() => {
+                        setStep("forgotPassword");
+                        setPassword("");
+                        setError(null);
+                      }}
+                    >
+                      Forgot password?
+                    </Button>
                     <Button
                       type="button"
                       variant="ghost"
@@ -320,6 +431,177 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                       }}
                     >
                       ← Use different email
+                    </Button>
+                  </div>
+                </CardContent>
+              </form>
+            </>
+          ) : step === "forgotPassword" ? (
+            <>
+              <CardHeader className="text-center">
+                <div className="flex justify-center">
+                  <img
+                    src="./logo.svg"
+                    alt="Lock Icon"
+                    width={64}
+                    height={64}
+                    className="rounded-lg mb-4 mt-4 cursor-pointer"
+                    onClick={() => navigate("/")}
+                  />
+                </div>
+                <CardTitle className="text-xl">Reset Password</CardTitle>
+                <CardDescription>
+                  We'll send a reset code to {email}
+                </CardDescription>
+              </CardHeader>
+              <form onSubmit={handleForgotPassword}>
+                <CardContent className="space-y-4">
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Sending code...
+                      </>
+                    ) : (
+                      <>
+                        Send Reset Code
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                  {error && (
+                    <p className="mt-2 text-sm text-red-500">{error}</p>
+                  )}
+                  <div className="mt-4">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="w-full text-xs"
+                      onClick={() => {
+                        setStep("login");
+                        setError(null);
+                      }}
+                    >
+                      ← Back to login
+                    </Button>
+                  </div>
+                </CardContent>
+              </form>
+            </>
+          ) : step === "resetPassword" ? (
+            <>
+              <CardHeader className="text-center">
+                <div className="flex justify-center">
+                  <img
+                    src="./logo.svg"
+                    alt="Lock Icon"
+                    width={64}
+                    height={64}
+                    className="rounded-lg mb-4 mt-4 cursor-pointer"
+                    onClick={() => navigate("/")}
+                  />
+                </div>
+                <CardTitle className="text-xl">Enter Reset Code</CardTitle>
+                <CardDescription>
+                  Check your email for the 6-digit code
+                </CardDescription>
+              </CardHeader>
+              <form onSubmit={handleResetPassword}>
+                <CardContent className="space-y-3">
+                  <div>
+                    <Label htmlFor="reset-token">Reset Code</Label>
+                    <Input
+                      id="reset-token"
+                      name="resetToken"
+                      placeholder="000000"
+                      type="text"
+                      className="text-center font-mono text-lg tracking-widest"
+                      value={resetToken}
+                      onChange={(e) => setResetToken(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                      disabled={isLoading}
+                      required
+                      maxLength={6}
+                    />
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Enter the 6-digit code from your email
+                    </p>
+                  </div>
+                  <div>
+                    <Label htmlFor="new-password">New Password</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="new-password"
+                        name="password"
+                        type="password"
+                        placeholder="Create a new password"
+                        className="pl-9"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        disabled={isLoading}
+                        required
+                        minLength={8}
+                      />
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      At least 8 characters
+                    </p>
+                  </div>
+                  <div>
+                    <Label htmlFor="confirm-new-password">Confirm Password</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="confirm-new-password"
+                        name="confirmPassword"
+                        type="password"
+                        placeholder="Confirm your new password"
+                        className="pl-9"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        disabled={isLoading}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Resetting password...
+                      </>
+                    ) : (
+                      <>
+                        Reset Password
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                  {error && (
+                    <p className="mt-2 text-sm text-red-500">{error}</p>
+                  )}
+                  <div className="mt-4">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="w-full text-xs"
+                      onClick={() => {
+                        setStep("forgotPassword");
+                        setResetToken("");
+                        setPassword("");
+                        setConfirmPassword("");
+                        setError(null);
+                      }}
+                    >
+                      ← Resend code
                     </Button>
                   </div>
                 </CardContent>

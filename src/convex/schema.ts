@@ -133,6 +133,16 @@ const schema = defineSchema(
     })
       .index("by_agent", ["agentId"])
       .index("by_parent", ["parentAgentId"]),
+
+    // Password reset tokens
+    passwordResetTokens: defineTable({
+      userId: v.id("users"),
+      token: v.string(),
+      expiresAt: v.number(),
+      used: v.boolean(),
+    })
+      .index("by_user", ["userId"])
+      .index("by_token", ["token"]),
   },
   {
     schemaValidation: false,
