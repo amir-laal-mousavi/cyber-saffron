@@ -8,93 +8,49 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, BookOpen, GraduationCap, PlayCircle, Clock, Star, CheckCircle2, Lock, ChevronRight, Trophy, Search, Users } from "lucide-react";
 import { useNavigate } from "react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 
-// Mock Data for Courses
-const COURSES = [
-  {
-    id: "saffron-101",
-    title: "Saffron 101: The Red Gold",
-    description: "Master the fundamentals of the world's most expensive spice. Learn about its history, cultivation, and grading standards.",
-    category: "Product Knowledge",
-    level: "Beginner",
-    duration: "45 min",
-    rating: 4.9,
-    students: 1234,
-    image: "https://images.unsplash.com/photo-1597075687490-8f673c6c17f6?q=80&w=1000&auto=format&fit=crop",
-    modules: [
-      { title: "The History of Saffron", duration: "10 min", type: "video" },
-      { title: "Cultivation & Harvesting", duration: "15 min", type: "video" },
-      { title: "Grading Standards (Sargol, Negin)", duration: "12 min", type: "reading" },
-      { title: "Identifying Authentic Saffron", duration: "8 min", type: "quiz" }
-    ]
-  },
-  {
-    id: "blockchain-verify",
-    title: "Blockchain Verification",
-    description: "Understanding how we use blockchain technology to guarantee provenance and transparency in the supply chain.",
-    category: "Technology",
-    level: "Intermediate",
-    duration: "60 min",
-    rating: 4.8,
-    students: 856,
-    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=1000&auto=format&fit=crop",
-    modules: [
-      { title: "Introduction to Web3 & Supply Chain", duration: "15 min", type: "video" },
-      { title: "How Provenance Works", duration: "20 min", type: "video" },
-      { title: "Verifying Products on Chain", duration: "15 min", type: "interactive" },
-      { title: "Smart Contracts Explained", duration: "10 min", type: "reading" }
-    ]
-  },
-  {
-    id: "agent-success",
-    title: "Agent Success Masterclass",
-    description: "Advanced strategies to grow your network, maximize commissions, and become a top-tier Cyber Saffron agent.",
-    category: "Business",
-    level: "Advanced",
-    duration: "90 min",
-    rating: 5.0,
-    students: 2100,
-    image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1000&auto=format&fit=crop",
-    modules: [
-      { title: "The Commission Model Deep Dive", duration: "20 min", type: "video" },
-      { title: "Building Your Network", duration: "25 min", type: "video" },
-      { title: "Marketing Strategies for Luxury Goods", duration: "30 min", type: "reading" },
-      { title: "Managing Your Dashboard", duration: "15 min", type: "interactive" }
-    ]
-  },
-  {
-    id: "culinary-arts",
-    title: "Culinary Arts with Saffron",
-    description: "Explore the culinary applications of saffron. Learn recipes and techniques from top chefs.",
-    category: "Lifestyle",
-    level: "Beginner",
-    duration: "30 min",
-    rating: 4.7,
-    students: 540,
-    image: "https://images.unsplash.com/photo-1532339142463-fd0a8979791a?q=80&w=1000&auto=format&fit=crop",
-    modules: [
-      { title: "Flavor Profiling", duration: "5 min", type: "video" },
-      { title: "Infusion Techniques", duration: "10 min", type: "video" },
-      { title: "Signature Recipes", duration: "15 min", type: "reading" }
-    ]
-  }
-];
+// Define Course type based on schema
+type Course = {
+  _id: Id<"courses">;
+  title: string;
+  description: string;
+  category: string;
+  level: string;
+  duration: string;
+  rating: number;
+  students: number;
+  image: string;
+  modules: {
+    title: string;
+    duration: string;
+    type: string;
+  }[];
+};
 
 export default function Academy() {
   const navigate = useNavigate();
-  const [selectedCourse, setSelectedCourse] = useState<typeof COURSES[0] | null>(null);
+  const courses = useQuery(api.academy.list);
+  const seedCourses = useMutation(api.academy.seed);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
-  const filteredCourses = COURSES.filter(course => {
+  useEffect(() => {
+    seedCourses();
+  }, [seedCourses]);
+
+  const filteredCourses = courses?.filter(course => {
     const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           course.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTab = activeTab === "all" || course.level.toLowerCase() === activeTab.toLowerCase();
     return matchesSearch && matchesTab;
-  });
+  }) || [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -174,9 +130,12 @@ export default function Academy() {
 
           <TabsContent value={activeTab} className="mt-0">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCourses.map((course) => (
+              {filteredCourses.length === 0 && courses === undefined ? (
+                 // Loading skeletons could go here, for now just empty or loading text
+                 <div className="col-span-full text-center py-12 text-muted-foreground">Loading courses...</div>
+              ) : filteredCourses.map((course) => (
                 <motion.div
-                  key={course.id}
+                  key={course._id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}

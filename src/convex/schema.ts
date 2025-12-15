@@ -143,6 +143,22 @@ const schema = defineSchema(
     })
       .index("by_user", ["userId"])
       .index("by_token", ["token"]),
+
+    courses: defineTable({
+      title: v.string(),
+      description: v.string(),
+      category: v.string(),
+      level: v.string(),
+      duration: v.string(),
+      rating: v.number(),
+      students: v.number(),
+      image: v.string(),
+      modules: v.array(v.object({
+        title: v.string(),
+        duration: v.string(),
+        type: v.string(),
+      })),
+    }),
   },
   {
     schemaValidation: false,

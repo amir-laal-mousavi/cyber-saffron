@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as academy from "../academy.js";
 import type * as agents from "../agents.js";
 import type * as auth from "../auth.js";
 import type * as auth_emailOtp from "../auth/emailOtp.js";
@@ -30,6 +31,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  academy: typeof academy;
   agents: typeof agents;
   auth: typeof auth;
   "auth/emailOtp": typeof auth_emailOtp;
