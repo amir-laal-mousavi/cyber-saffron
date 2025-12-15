@@ -11,6 +11,7 @@
 import type * as agents from "../agents.js";
 import type * as auth from "../auth.js";
 import type * as auth_emailOtp from "../auth/emailOtp.js";
+import type * as auth_password from "../auth/password.js";
 import type * as cart from "../cart.js";
 import type * as debug_auth from "../debug_auth.js";
 import type * as http from "../http.js";
@@ -29,6 +30,7 @@ declare const fullApi: ApiFromModules<{
   agents: typeof agents;
   auth: typeof auth;
   "auth/emailOtp": typeof auth_emailOtp;
+  "auth/password": typeof auth_password;
   cart: typeof cart;
   debug_auth: typeof debug_auth;
   http: typeof http;

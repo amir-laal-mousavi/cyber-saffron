@@ -8,14 +8,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
+import { Label } from "@/components/ui/label";
 
 import { useAuth } from "@/hooks/use-auth";
-import { ArrowRight, Loader2, Mail, UserX } from "lucide-react";
+import { ArrowRight, Loader2, Mail, Lock } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useQuery } from "convex/react";
@@ -28,18 +24,17 @@ interface AuthProps {
 function Auth({ redirectAfterAuth }: AuthProps = {}) {
   const { isLoading: authLoading, isAuthenticated, signIn } = useAuth();
   const navigate = useNavigate();
-  type AuthStep = "emailCheck" | "login" | "signup" | "otp";
+  type AuthStep = "emailCheck" | "login" | "signup";
   const [step, setStep] = useState<AuthStep>("emailCheck");
-  const [otpEmail, setOtpEmail] = useState<string>("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [referralCode, setReferralCode] = useState("");
   const [referralError, setReferralError] = useState<string | null>(null);
   const [emailCheckLoading, setEmailCheckLoading] = useState(false);
   const [userExists, setUserExists] = useState<boolean | null>(null);
-  const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [storedReferralCode, setStoredReferralCode] = useState<string>("");
   const [validatingReferral, setValidatingReferral] = useState(false);
 
   // Query to verify referral code - only runs when we have a code to check
@@ -117,8 +112,6 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
         return false;
       }
       
-      // Success - store the code
-      setStoredReferralCode(referralCode);
       setValidatingReferral(false);
       return true;
     } catch (error) {
@@ -133,19 +126,25 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
+    
+    if (!password) {
+      setError("Please enter your password");
+      setIsLoading(false);
+      return;
+    }
+    
     try {
       const formData = new FormData();
       formData.set("email", email);
-      await signIn("email-otp", formData);
-      setOtpEmail(email);
-      setStep("otp");
-      setIsLoading(false);
+      formData.set("password", password);
+      formData.set("flow", "signIn");
+      await signIn("password", formData);
     } catch (error) {
       console.error("Login error:", error);
       setError(
         error instanceof Error
           ? error.message
-          : "Failed to send verification code. Please try again.",
+          : "Invalid email or password. Please try again.",
       );
       setIsLoading(false);
     }
@@ -153,6 +152,16 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
 
   const handleSignupSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    
+    if (!password || password.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
+    }
+    
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
     
     // Validate referral code first
     const isValidReferral = await handleReferralValidation();
@@ -165,80 +174,26 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     try {
       const formData = new FormData();
       formData.set("email", email);
+      formData.set("password", password);
+      formData.set("flow", "signUp");
+      
       // Store referral code for post-auth initialization
-      sessionStorage.setItem("pendingReferralCode", storedReferralCode);
-      await signIn("email-otp", formData);
-      setOtpEmail(email);
-      setStep("otp");
-      setIsLoading(false);
+      sessionStorage.setItem("pendingReferralCode", referralCode);
+      
+      await signIn("password", formData);
     } catch (error) {
       console.error("Signup error:", error);
       setError(
         error instanceof Error
           ? error.message
-          : "Failed to send verification code. Please try again.",
+          : "Failed to create account. Please try again.",
       );
       setIsLoading(false);
     }
   };
-
-  const handleOtpSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsLoading(true);
-    setError(null);
-    try {
-      const formData = new FormData();
-      formData.set("email", otpEmail);
-      formData.set("code", otp);
-      await signIn("email-otp", formData);
-
-      console.log("OTP sign in completed, waiting for auth state...");
-
-      // Wait for auth state to update with timeout
-      const checkAuthTimeout = setTimeout(() => {
-        if (!isAuthenticated) {
-          console.error("Auth state did not update after sign in");
-          setError("Authentication failed. Please verify your JWT_PRIVATE_KEY is correctly formatted as a multiline string in your backend environment variables.");
-          setIsLoading(false);
-        }
-      }, 3000);
-
-      // Clear timeout if component unmounts
-      return () => clearTimeout(checkAuthTimeout);
-    } catch (error) {
-      console.error("OTP verification error:", error);
-      setError(
-        error instanceof Error && error.message.includes("Invalid")
-          ? "The verification code you entered is incorrect."
-          : "Authentication failed. The JWT_PRIVATE_KEY may not be properly configured."
-      );
-      setIsLoading(false);
-      setOtp("");
-    }
-  };
-
-  // handleGuestLogin is disabled since agents must have referral codes
-  // const handleGuestLogin = async () => {
-  //   setIsLoading(true);
-  //   setError(null);
-  //   try {
-  //     console.log("Attempting anonymous sign in...");
-  //     await signIn("anonymous");
-  //     console.log("Anonymous sign in successful");
-  //     const redirect = redirectAfterAuth || "/";
-  //     navigate(redirect);
-  //   } catch (error) {
-  //     console.error("Guest login error:", error);
-  //     console.error("Error details:", JSON.stringify(error, null, 2));
-  //     setError(`Failed to sign in as guest: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  //     setIsLoading(false);
-  //   }
-  // };
 
   return (
     <div className="min-h-screen flex flex-col">
-
-      
       {/* Auth Content */}
       <div className="flex-1 flex items-center justify-center">
         <div className="flex items-center justify-center h-full flex-col">
@@ -311,11 +266,28 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                 </div>
                 <CardTitle className="text-xl">Welcome Back</CardTitle>
                 <CardDescription>
-                  We'll send a code to {email}
+                  Sign in to {email}
                 </CardDescription>
               </CardHeader>
               <form onSubmit={handleLoginSubmit}>
-                <CardContent>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="password"
+                        name="password"
+                        type="password"
+                        placeholder="Enter your password"
+                        className="pl-9"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        disabled={isLoading}
+                        required
+                      />
+                    </div>
+                  </div>
                   <Button
                     type="submit"
                     className="w-full"
@@ -324,11 +296,11 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                     {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Sending code...
+                        Signing in...
                       </>
                     ) : (
                       <>
-                        Send verification code
+                        Sign In
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </>
                     )}
@@ -344,6 +316,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                       onClick={() => {
                         setStep("emailCheck");
                         setEmail("");
+                        setPassword("");
                       }}
                     >
                       ← Use different email
@@ -352,7 +325,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                 </CardContent>
               </form>
             </>
-          ) : step === "signup" ? (
+          ) : (
             <>
               <CardHeader className="text-center">
                 <div className="flex justify-center">
@@ -367,14 +340,16 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                 </div>
                 <CardTitle className="text-xl">Create Account</CardTitle>
                 <CardDescription>
-                  Enter your referral code to join
+                  Enter your referral code and create a password
                 </CardDescription>
               </CardHeader>
               <form onSubmit={handleSignupSubmit}>
                 <CardContent>
                   <div className="space-y-3">
                     <div>
+                      <Label htmlFor="referralCode">Referral Code</Label>
                       <Input
+                        id="referralCode"
                         name="referralCode"
                         placeholder="REFERRAL CODE"
                         type="text"
@@ -395,6 +370,44 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                         Required to create an account
                       </p>
                     </div>
+                    <div>
+                      <Label htmlFor="signup-password">Password</Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="signup-password"
+                          name="password"
+                          type="password"
+                          placeholder="Create a password"
+                          className="pl-9"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          disabled={isLoading}
+                          required
+                          minLength={8}
+                        />
+                      </div>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        At least 8 characters
+                      </p>
+                    </div>
+                    <div>
+                      <Label htmlFor="confirm-password">Confirm Password</Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="confirm-password"
+                          name="confirmPassword"
+                          type="password"
+                          placeholder="Confirm your password"
+                          className="pl-9"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          disabled={isLoading}
+                          required
+                        />
+                      </div>
+                    </div>
                     <Button
                       type="submit"
                       className="w-full"
@@ -403,11 +416,11 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                       {isLoading || validatingReferral ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          {validatingReferral ? "Validating..." : "Sending code..."}
+                          {validatingReferral ? "Validating..." : "Creating account..."}
                         </>
                       ) : (
                         <>
-                          Continue
+                          Create Account
                           <ArrowRight className="ml-2 h-4 w-4" />
                         </>
                       )}
@@ -424,6 +437,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                       onClick={() => {
                         setStep("emailCheck");
                         setEmail("");
+                        setPassword("");
+                        setConfirmPassword("");
                         setReferralCode("");
                         setReferralError(null);
                       }}
@@ -435,94 +450,6 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                     Don't have a referral code? Contact an existing agent.
                   </p>
                 </CardContent>
-              </form>
-            </>
-          ) : (
-            <>
-              <CardHeader className="text-center mt-4">
-                <CardTitle>Check your email</CardTitle>
-                <CardDescription>
-                  We've sent a code to {otpEmail}
-                </CardDescription>
-              </CardHeader>
-              <form onSubmit={handleOtpSubmit}>
-                <CardContent className="pb-4">
-                  <input type="hidden" name="email" value={otpEmail} />
-                  <input type="hidden" name="code" value={otp} />
-
-                  <div className="flex justify-center">
-                    <InputOTP
-                      value={otp}
-                      onChange={setOtp}
-                      maxLength={6}
-                      disabled={isLoading}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && otp.length === 6 && !isLoading) {
-                          // Find the closest form and submit it
-                          const form = (e.target as HTMLElement).closest("form");
-                          if (form) {
-                            form.requestSubmit();
-                          }
-                        }
-                      }}
-                    >
-                      <InputOTPGroup>
-                        {Array.from({ length: 6 }).map((_, index) => (
-                          <InputOTPSlot key={index} index={index} />
-                        ))}
-                      </InputOTPGroup>
-                    </InputOTP>
-                  </div>
-                  {error && (
-                    <p className="mt-2 text-sm text-red-500 text-center">
-                      {error}
-                    </p>
-                  )}
-                  <p className="text-sm text-muted-foreground text-center mt-4">
-                    Didn't receive a code?{" "}
-                    <Button
-                      variant="link"
-                      className="p-0 h-auto"
-                      onClick={() => {
-                        setStep("emailCheck");
-                        setEmail("");
-                      }}
-                    >
-                      Try again
-                    </Button>
-                  </p>
-                </CardContent>
-                <CardFooter className="flex-col gap-2">
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={isLoading || otp.length !== 6}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Verifying...
-                      </>
-                    ) : (
-                      <>
-                        Verify code
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </>
-                    )}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => {
-                      setStep("emailCheck");
-                      setEmail("");
-                    }}
-                    disabled={isLoading}
-                    className="w-full"
-                  >
-                    Use different email
-                  </Button>
-                </CardFooter>
               </form>
             </>
           )}
