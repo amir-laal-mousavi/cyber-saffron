@@ -11,6 +11,10 @@ import { Input } from "@/components/ui/input";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+// @ts-ignore
+import ReactMarkdown from "react-markdown";
+// @ts-ignore
+import remarkGfm from "remark-gfm";
 
 // Define Course type based on simplified schema
 type Course = {
@@ -182,8 +186,25 @@ export default function Academy() {
                     <p className="text-xl text-muted-foreground mb-8 font-medium leading-relaxed border-l-4 border-primary/50 pl-6 italic">
                       {selectedCourse.description}
                     </p>
-                    <div className="space-y-6 text-foreground/90 leading-relaxed whitespace-pre-line text-lg">
-                      {selectedCourse.content}
+                    <div className="text-foreground/90 leading-relaxed text-lg">
+                      <ReactMarkdown 
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          h1: ({node, ...props}: any) => <h1 className="text-3xl font-bold mt-8 mb-4 text-primary" {...props} />,
+                          h2: ({node, ...props}: any) => <h2 className="text-2xl font-bold mt-8 mb-4 text-foreground border-b border-border/50 pb-2" {...props} />,
+                          h3: ({node, ...props}: any) => <h3 className="text-xl font-bold mt-6 mb-3 text-foreground" {...props} />,
+                          p: ({node, ...props}: any) => <p className="mb-4 leading-relaxed" {...props} />,
+                          ul: ({node, ...props}: any) => <ul className="list-disc list-inside mb-6 space-y-2 ml-4" {...props} />,
+                          ol: ({node, ...props}: any) => <ol className="list-decimal list-inside mb-6 space-y-2 ml-4" {...props} />,
+                          li: ({node, ...props}: any) => <li className="pl-2" {...props} />,
+                          strong: ({node, ...props}: any) => <strong className="font-bold text-primary/90" {...props} />,
+                          em: ({node, ...props}: any) => <em className="italic text-foreground/80" {...props} />,
+                          blockquote: ({node, ...props}: any) => <blockquote className="border-l-4 border-primary/50 pl-6 italic my-6 py-2 bg-primary/5 rounded-r-lg text-muted-foreground" {...props} />,
+                          code: ({node, ...props}: any) => <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-primary" {...props} />,
+                        }}
+                      >
+                        {selectedCourse.content}
+                      </ReactMarkdown>
                     </div>
                     
                     <div className="mt-12 pt-8 border-t border-border flex justify-between items-center text-sm text-muted-foreground">
