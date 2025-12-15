@@ -8,6 +8,7 @@ import { ArrowLeft, BookOpen, Calendar, Clock, Share2 } from "lucide-react";
 import { SaffronLoader } from "@/components/SaffronLoader";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 // @ts-ignore
 import ReactMarkdown from "react-markdown";
 // @ts-ignore
@@ -85,9 +86,10 @@ export default function CoursePage() {
         >
           {/* Hero Image */}
           <div className="relative w-full h-[40vh] md:h-[50vh] rounded-3xl overflow-hidden mb-10 shadow-2xl shadow-primary/10 border border-border/50">
-            <img 
+            <OptimizedImage 
               src={course.image} 
               alt={course.title}
+              containerClassName="w-full h-full"
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
@@ -133,7 +135,7 @@ export default function CoursePage() {
                       em: ({node, ...props}: any) => <em className="italic text-foreground/80" {...props} />,
                       blockquote: ({node, ...props}: any) => <blockquote className="border-l-4 border-primary/50 pl-6 italic my-8 py-2 bg-primary/5 rounded-r-lg text-muted-foreground" {...props} />,
                       code: ({node, ...props}: any) => <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-primary" {...props} />,
-                      img: ({node, ...props}: any) => <img className="rounded-xl shadow-lg my-8 border border-border/50 w-full" {...props} />,
+                      img: ({node, ...props}: any) => <OptimizedImage containerClassName="my-8 w-full rounded-xl shadow-lg border border-border/50" className="w-full" {...props} />,
                     }}
                   >
                     {course.content}

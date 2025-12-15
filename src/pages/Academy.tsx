@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 // @ts-ignore
 import ReactMarkdown from "react-markdown";
 // @ts-ignore
@@ -122,9 +123,10 @@ export default function Academy() {
               >
                 <div className="aspect-video relative overflow-hidden">
                   <div className="absolute inset-0 bg-primary/20 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 mix-blend-overlay" />
-                  <img 
+                  <OptimizedImage 
                     src={course.image} 
                     alt={course.title}
+                    containerClassName="w-full h-full"
                     className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
                   />
                   <Badge className="absolute top-3 right-3 bg-black/60 hover:bg-black/80 backdrop-blur-md border-none text-xs font-medium tracking-wide z-20">
