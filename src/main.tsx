@@ -23,6 +23,7 @@ const AuthPage = lazy(() => import("./pages/Auth.tsx"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail.tsx"));
 const Profile = lazy(() => import("./pages/Profile.tsx"));
 const NetworkVisualization = lazy(() => import("./pages/NetworkVisualization.tsx"));
+const Academy = lazy(() => import("./pages/Academy.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 // Route loading with saffron flower animation
@@ -115,6 +116,7 @@ createRoot(document.getElementById("root")!).render(
                       <Route path="/product/:id" element={<ProductDetail />} />
                       <Route path="/profile" element={<Profile />} />
                       <Route path="/network" element={<NetworkVisualization />} />
+                      <Route path="/academy" element={<Academy />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Suspense>

@@ -115,6 +115,16 @@ export default function Landing() {
                 )}
               </a>
             ))}
+            <a 
+              href="/academy"
+              className="hover:text-primary transition-colors cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/academy");
+              }}
+            >
+              Academy
+            </a>
           </div>
           <div className="flex items-center gap-3">
             <Button
@@ -207,6 +217,17 @@ export default function Landing() {
                 {section.charAt(0).toUpperCase() + section.slice(1).replace("features", "Process").replace("products", "Collection")}
               </a>
             ))}
+            <a 
+              href="/academy"
+              className="text-lg font-medium hover:text-primary transition-colors cursor-pointer py-2"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/academy");
+                setMobileMenuOpen(false);
+              }}
+            >
+              Academy
+            </a>
             <div className="pt-4 border-t border-border">
               {isAuthenticated ? (
                 <Button
