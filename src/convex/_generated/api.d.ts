@@ -14,6 +14,7 @@ import type * as auth_emailOtp from "../auth/emailOtp.js";
 import type * as cart from "../cart.js";
 import type * as debug_env from "../debug_env.js";
 import type * as http from "../http.js";
+import type * as key_generator from "../key_generator.js";
 import type * as orders from "../orders.js";
 import type * as products from "../products.js";
 import type * as products_extended from "../products_extended.js";
@@ -32,6 +33,7 @@ declare const fullApi: ApiFromModules<{
   cart: typeof cart;
   debug_env: typeof debug_env;
   http: typeof http;
+  key_generator: typeof key_generator;
   orders: typeof orders;
   products: typeof products;
   products_extended: typeof products_extended;
