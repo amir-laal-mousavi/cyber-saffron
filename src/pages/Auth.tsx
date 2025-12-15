@@ -194,20 +194,23 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
 
       console.log("OTP sign in completed, waiting for auth state...");
 
-      // Wait a moment for auth state to update
-      setTimeout(() => {
+      // Wait for auth state to update with timeout
+      const checkAuthTimeout = setTimeout(() => {
         if (!isAuthenticated) {
           console.error("Auth state did not update after sign in");
-          setError("Authentication failed. Please check your environment configuration.");
+          setError("Authentication failed. Please verify your JWT_PRIVATE_KEY is correctly formatted as a multiline string in your backend environment variables.");
           setIsLoading(false);
         }
       }, 3000);
+
+      // Clear timeout if component unmounts
+      return () => clearTimeout(checkAuthTimeout);
     } catch (error) {
       console.error("OTP verification error:", error);
       setError(
         error instanceof Error && error.message.includes("Invalid")
           ? "The verification code you entered is incorrect."
-          : "Authentication failed. Please contact support."
+          : "Authentication failed. The JWT_PRIVATE_KEY may not be properly configured."
       );
       setIsLoading(false);
       setOtp("");
