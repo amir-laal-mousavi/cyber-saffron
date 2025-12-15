@@ -40,25 +40,25 @@ export default function Academy() {
   }) || [];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background selection:bg-primary selection:text-primary-foreground">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center px-4 md:px-8 mx-auto justify-between">
           <div className="flex items-center">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+            <Button variant="ghost" size="icon" onClick={() => navigate("/")} className="hover:bg-primary/10 hover:text-primary">
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <span className="ml-4 font-semibold flex items-center gap-2 text-lg">
+            <span className="ml-4 font-bold flex items-center gap-2 text-lg tracking-tight">
               <BookOpen className="h-6 w-6 text-primary" />
               Cyber Saffron Academy
             </span>
           </div>
           <div className="hidden md:flex items-center gap-4">
-            <div className="relative w-64">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <div className="relative w-72 group">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
               <Input 
                 placeholder="Search articles..." 
-                className="pl-9" 
+                className="pl-10 bg-secondary/50 border-transparent focus:border-primary/50 focus:bg-background transition-all duration-300" 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -69,22 +69,30 @@ export default function Academy() {
 
       <main className="container px-4 md:px-8 py-12 mx-auto">
         {/* Hero Section */}
-        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-primary/20 via-primary/10 to-background border border-primary/10 mb-12">
-          <div className="grid md:grid-cols-2 gap-8 p-8 md:p-12 items-center">
-            <div className="space-y-4">
-              <Badge className="bg-primary/20 text-primary hover:bg-primary/30 border-primary/20">Knowledge Base</Badge>
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Learn About Saffron</h1>
-              <p className="text-muted-foreground text-lg max-w-lg">
-                Explore our library of articles covering everything from the history of saffron to blockchain verification and culinary arts.
+        <div className="relative rounded-3xl overflow-hidden mb-16 border border-primary/20 shadow-2xl shadow-primary/5 group">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background z-0" />
+          <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-primary/20 rounded-full blur-3xl opacity-50 group-hover:opacity-70 transition-opacity duration-1000" />
+          <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-72 h-72 bg-secondary/20 rounded-full blur-3xl opacity-50 group-hover:opacity-70 transition-opacity duration-1000" />
+          
+          <div className="relative z-10 grid md:grid-cols-2 gap-12 p-10 md:p-16 items-center">
+            <div className="space-y-6">
+              <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-primary/20 px-4 py-1.5 text-sm backdrop-blur-sm">
+                Knowledge Base
+              </Badge>
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+                The Art & Science of Saffron
+              </h1>
+              <p className="text-muted-foreground text-lg md:text-xl max-w-lg leading-relaxed">
+                Explore our curated library covering everything from ancient history to blockchain verification and modern culinary arts.
               </p>
             </div>
-            <div className="hidden md:flex justify-center">
-              <div className="relative">
-                <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
+            <div className="hidden md:flex justify-center perspective-1000">
+              <div className="relative group-hover:scale-105 transition-transform duration-700 ease-out">
+                <div className="absolute inset-0 bg-primary/30 blur-3xl rounded-full animate-pulse" />
                 <img 
                   src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?q=80&w=1000&auto=format&fit=crop" 
                   alt="Academy Hero" 
-                  className="relative rounded-2xl shadow-2xl border border-border/50 w-[400px] h-[300px] object-cover rotate-3 hover:rotate-0 transition-transform duration-500"
+                  className="relative rounded-2xl shadow-2xl border border-border/50 w-[450px] h-[320px] object-cover rotate-3 group-hover:rotate-1 transition-all duration-700"
                 />
               </div>
             </div>
@@ -92,36 +100,46 @@ export default function Academy() {
         </div>
 
         {/* Course Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredCourses.length === 0 && courses === undefined ? (
-              <div className="col-span-full text-center py-12 text-muted-foreground">Loading content...</div>
-          ) : filteredCourses.map((course) => (
+              <div className="col-span-full flex flex-col items-center justify-center py-20 text-muted-foreground">
+                <div className="h-8 w-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-4" />
+                <p>Loading knowledge base...</p>
+              </div>
+          ) : filteredCourses.map((course, index) => (
             <motion.div
               key={course._id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
             >
-              <Card className="h-full flex flex-col overflow-hidden hover:border-primary/50 transition-all duration-300 group cursor-pointer" onClick={() => setSelectedCourse(course)}>
+              <Card 
+                className="h-full flex flex-col overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all duration-500 group cursor-pointer" 
+                onClick={() => setSelectedCourse(course)}
+              >
                 <div className="aspect-video relative overflow-hidden">
+                  <div className="absolute inset-0 bg-primary/20 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 mix-blend-overlay" />
                   <img 
                     src={course.image} 
                     alt={course.title}
-                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+                    className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
                   />
-                  <Badge className="absolute top-3 right-3 bg-black/60 hover:bg-black/70 backdrop-blur-md border-none">
+                  <Badge className="absolute top-3 right-3 bg-black/60 hover:bg-black/80 backdrop-blur-md border-none text-xs font-medium tracking-wide z-20">
                     {course.category}
                   </Badge>
                 </div>
-                <CardHeader className="pb-3">
-                  <CardTitle className="line-clamp-1 text-lg">{course.title}</CardTitle>
-                  <CardDescription className="line-clamp-2 text-sm mt-1">
+                <CardHeader className="pb-4 space-y-2">
+                  <CardTitle className="line-clamp-1 text-xl group-hover:text-primary transition-colors duration-300">
+                    {course.title}
+                  </CardTitle>
+                  <CardDescription className="line-clamp-2 text-sm leading-relaxed">
                     {course.description}
                   </CardDescription>
                 </CardHeader>
-                <CardFooter className="pt-0 mt-auto">
-                  <Button variant="secondary" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                <CardFooter className="pt-0 mt-auto pb-6 px-6">
+                  <Button variant="secondary" className="w-full bg-secondary/50 hover:bg-primary hover:text-primary-foreground transition-all duration-300 group-hover:shadow-md">
                     Read Article
+                    <ArrowLeft className="w-4 h-4 ml-2 rotate-180 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </CardFooter>
               </Card>
@@ -131,37 +149,46 @@ export default function Academy() {
 
         {/* Course Detail Dialog */}
         <Dialog open={!!selectedCourse} onOpenChange={(open) => !open && setSelectedCourse(null)}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0 border-primary/20 bg-background/95 backdrop-blur-xl shadow-2xl shadow-black/50">
             {selectedCourse && (
               <>
-                <div className="relative h-48 md:h-64 w-full shrink-0">
+                <div className="relative h-56 md:h-72 w-full shrink-0 overflow-hidden">
                   <img 
                     src={selectedCourse.image} 
                     alt={selectedCourse.title}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
-                  <div className="absolute bottom-0 left-0 p-6 w-full">
-                    <Badge className="mb-2">{selectedCourse.category}</Badge>
-                    <h2 className="text-2xl md:text-3xl font-bold text-white">{selectedCourse.title}</h2>
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+                  <div className="absolute bottom-0 left-0 p-8 w-full">
+                    <Badge className="mb-3 bg-primary text-primary-foreground hover:bg-primary/90 border-none px-3 py-1">
+                      {selectedCourse.category}
+                    </Badge>
+                    <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight drop-shadow-sm">
+                      {selectedCourse.title}
+                    </h2>
                   </div>
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white rounded-full"
+                    className="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white rounded-full backdrop-blur-sm transition-colors"
                     onClick={() => setSelectedCourse(null)}
                   >
                     <X className="h-5 w-5" />
                   </Button>
                 </div>
 
-                <ScrollArea className="flex-1 p-6 md:p-8">
-                  <div className="prose prose-invert max-w-none">
-                    <p className="text-lg text-muted-foreground mb-6 font-medium leading-relaxed">
+                <ScrollArea className="flex-1 p-8 md:p-10">
+                  <div className="prose prose-invert max-w-none mx-auto">
+                    <p className="text-xl text-muted-foreground mb-8 font-medium leading-relaxed border-l-4 border-primary/50 pl-6 italic">
                       {selectedCourse.description}
                     </p>
-                    <div className="space-y-4 text-foreground/90 leading-relaxed whitespace-pre-line">
+                    <div className="space-y-6 text-foreground/90 leading-relaxed whitespace-pre-line text-lg">
                       {selectedCourse.content}
+                    </div>
+                    
+                    <div className="mt-12 pt-8 border-t border-border flex justify-between items-center text-sm text-muted-foreground">
+                      <span>Cyber Saffron Academy</span>
+                      <span>Verified Content</span>
                     </div>
                   </div>
                 </ScrollArea>
