@@ -147,17 +147,9 @@ const schema = defineSchema(
     courses: defineTable({
       title: v.string(),
       description: v.string(),
+      content: v.string(),
       category: v.string(),
-      level: v.string(),
-      duration: v.string(),
-      rating: v.number(),
-      students: v.number(),
       image: v.string(),
-      modules: v.array(v.object({
-        title: v.string(),
-        duration: v.string(),
-        type: v.string(),
-      })),
     }),
   },
   {
