@@ -192,10 +192,10 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       formData.set("code", otp);
       await signIn("email-otp", formData);
 
-      console.log("signed in");
+      console.log("signed in - waiting for auth state update");
 
-      const redirect = redirectAfterAuth || "/";
-      navigate(redirect);
+      // Don't navigate immediately - let the useEffect handle it when isAuthenticated becomes true
+      // The useEffect above watches [authLoading, isAuthenticated] and will redirect
     } catch (error) {
       console.error("OTP verification error:", error);
 

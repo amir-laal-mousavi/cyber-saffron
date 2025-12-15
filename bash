@@ -1,1 +1,1 @@
-pnpm add @walletconnect/ethereum-provider
+npx convex run debug_auth:checkEnv
