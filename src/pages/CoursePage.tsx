@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, BookOpen, Calendar, Clock, Share2 } from "lucide-react";
 import { SaffronLoader } from "@/components/SaffronLoader";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 // @ts-ignore
 import ReactMarkdown from "react-markdown";
 // @ts-ignore
@@ -16,6 +17,31 @@ export default function CoursePage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const course = useQuery(api.academy.get, { id: id as Id<"courses"> });
+
+  const handleShare = async () => {
+    if (!course) return;
+    
+    const shareData = {
+      title: course.title,
+      text: course.description,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Link copied to clipboard");
+      }
+    } catch (error) {
+      // Fallback to clipboard if share fails or is not supported
+      if ((error as Error).name !== 'AbortError') {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Link copied to clipboard");
+      }
+    }
+  };
 
   if (course === undefined) {
     return <SaffronLoader />;
@@ -44,7 +70,7 @@ export default function CoursePage() {
               <span className="hidden sm:inline">Cyber Saffron Academy</span>
             </span>
           </div>
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button variant="outline" size="sm" className="gap-2" onClick={handleShare}>
             <Share2 className="h-4 w-4" />
             Share
           </Button>
