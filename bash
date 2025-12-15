@@ -1,1 +1,3 @@
-npx convex run debug_auth:checkEnv
+rm src/wagmi.ts
+
+grep -r "src/wagmi" src/ || grep -r "@/wagmi" src/
