@@ -192,16 +192,24 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       formData.set("code", otp);
       await signIn("email-otp", formData);
 
-      console.log("signed in - waiting for auth state update");
+      console.log("OTP sign in completed, waiting for auth state...");
 
-      // Don't navigate immediately - let the useEffect handle it when isAuthenticated becomes true
-      // The useEffect above watches [authLoading, isAuthenticated] and will redirect
+      // Wait a moment for auth state to update
+      setTimeout(() => {
+        if (!isAuthenticated) {
+          console.error("Auth state did not update after sign in");
+          setError("Authentication failed. Please check your environment configuration.");
+          setIsLoading(false);
+        }
+      }, 3000);
     } catch (error) {
       console.error("OTP verification error:", error);
-
-      setError("The verification code you entered is incorrect.");
+      setError(
+        error instanceof Error && error.message.includes("Invalid")
+          ? "The verification code you entered is incorrect."
+          : "Authentication failed. Please contact support."
+      );
       setIsLoading(false);
-
       setOtp("");
     }
   };
