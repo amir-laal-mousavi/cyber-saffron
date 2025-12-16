@@ -1,3 +1,1 @@
-{
-  "command": "npx convex run setAdmin:promoteToAdmin '{\"email\": \"amirmoosavi9020@gmail.com\"}'"
-}
+{"command": "npx convex run fixAdmin:resetAdminUser"}

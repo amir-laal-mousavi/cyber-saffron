@@ -19,6 +19,7 @@ import type * as auth_password from "../auth/password.js";
 import type * as auth_passwordReset from "../auth/passwordReset.js";
 import type * as cart from "../cart.js";
 import type * as debug_auth from "../debug_auth.js";
+import type * as fixAdmin from "../fixAdmin.js";
 import type * as http from "../http.js";
 import type * as migrations from "../migrations.js";
 import type * as orders from "../orders.js";
@@ -49,6 +50,7 @@ declare const fullApi: ApiFromModules<{
   "auth/passwordReset": typeof auth_passwordReset;
   cart: typeof cart;
   debug_auth: typeof debug_auth;
+  fixAdmin: typeof fixAdmin;
   http: typeof http;
   migrations: typeof migrations;
   orders: typeof orders;
