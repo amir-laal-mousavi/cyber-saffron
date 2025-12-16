@@ -151,6 +151,27 @@ const schema = defineSchema(
       category: v.string(),
       image: v.string(),
     }),
+
+    // Support System
+    supportTickets: defineTable({
+      userId: v.optional(v.id("users")),
+      sessionId: v.optional(v.string()), // For anonymous users
+      status: v.string(), // "open", "closed", "resolved"
+      priority: v.optional(v.string()),
+      createdAt: v.number(),
+      updatedAt: v.optional(v.number()),
+    })
+      .index("by_user", ["userId"])
+      .index("by_session", ["sessionId"])
+      .index("by_status", ["status"]),
+
+    supportMessages: defineTable({
+      ticketId: v.id("supportTickets"),
+      sender: v.string(), // "user", "support", "system"
+      content: v.string(),
+      read: v.boolean(),
+      createdAt: v.number(),
+    }).index("by_ticket", ["ticketId"]),
   },
   {
     schemaValidation: false,

@@ -16,6 +16,7 @@ import "./types/global.d.ts";
 import { AgentInitializer } from "@/components/AgentInitializer";
 import { SaffronLoader } from "@/components/SaffronLoader";
 import { motion, AnimatePresence } from "framer-motion";
+import { SupportChat } from "@/components/SupportChat";
 
 // Lazy load route components for better code splitting
 const Landing = lazy(() => import("./pages/Landing.tsx"));
@@ -124,6 +125,7 @@ createRoot(document.getElementById("root")!).render(
                   </Suspense>
                 </RouteTransitionWrapper>
               </BrowserRouter>
+              <SupportChat />
               <Toaster />
             </ConvexAuthProvider>
           </RainbowKitProvider>
