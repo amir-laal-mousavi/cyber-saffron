@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { AgentTier } from "./schema";
 
 // Generate a unique referral code
 function createRandomReferralCode(): string {
@@ -13,7 +14,7 @@ function createRandomReferralCode(): string {
 }
 
 // Get agent tier based on total sales
-function calculateAgentTier(totalSales: number): string {
+export function calculateAgentTier(totalSales: number): AgentTier {
   if (totalSales >= 500000) return "triple_diamond";
   if (totalSales >= 250000) return "double_diamond";
   if (totalSales >= 100000) return "diamond";

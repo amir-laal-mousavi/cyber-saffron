@@ -18,6 +18,7 @@ import type * as auth_passwordReset from "../auth/passwordReset.js";
 import type * as cart from "../cart.js";
 import type * as debug_auth from "../debug_auth.js";
 import type * as http from "../http.js";
+import type * as migrations from "../migrations.js";
 import type * as orders from "../orders.js";
 import type * as products from "../products.js";
 import type * as products_extended from "../products_extended.js";
@@ -44,6 +45,7 @@ declare const fullApi: ApiFromModules<{
   cart: typeof cart;
   debug_auth: typeof debug_auth;
   http: typeof http;
+  migrations: typeof migrations;
   orders: typeof orders;
   products: typeof products;
   products_extended: typeof products_extended;
