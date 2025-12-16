@@ -170,7 +170,8 @@ function AdminLogin({ onLogin }: { onLogin: () => void }) {
       await signIn("password", { email, password, flow: "signIn" });
       toast.success("Admin access granted");
     } catch (error) {
-      toast.error("Invalid credentials");
+      console.error("Admin login error:", error);
+      toast.error("Invalid credentials. If you haven't set up your account, please Sign Up first.");
     } finally {
       setIsLoading(false);
     }

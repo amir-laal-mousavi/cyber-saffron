@@ -31,6 +31,7 @@ import type * as setAdmin from "../setAdmin.js";
 import type * as support from "../support.js";
 import type * as testing from "../testing.js";
 import type * as users from "../users.js";
+import type * as verifyAdmin from "../verifyAdmin.js";
 
 import type {
   ApiFromModules,
@@ -62,6 +63,7 @@ declare const fullApi: ApiFromModules<{
   support: typeof support;
   testing: typeof testing;
   users: typeof users;
+  verifyAdmin: typeof verifyAdmin;
 }>;
 
 /**
