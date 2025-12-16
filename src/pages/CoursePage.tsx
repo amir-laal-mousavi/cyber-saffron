@@ -124,18 +124,29 @@ export default function CoursePage() {
                   <ReactMarkdown 
                     remarkPlugins={[remarkGfm]}
                     components={{
-                      h1: ({node, ...props}: any) => <h1 className="text-3xl font-bold mt-12 mb-6 text-primary scroll-m-20" {...props} />,
-                      h2: ({node, ...props}: any) => <h2 className="text-2xl font-bold mt-10 mb-5 text-foreground border-b border-border/50 pb-2 scroll-m-20" {...props} />,
-                      h3: ({node, ...props}: any) => <h3 className="text-xl font-bold mt-8 mb-4 text-foreground scroll-m-20" {...props} />,
-                      p: ({node, ...props}: any) => <p className="mb-6 leading-7" {...props} />,
-                      ul: ({node, ...props}: any) => <ul className="list-disc list-inside mb-6 space-y-2 ml-4" {...props} />,
-                      ol: ({node, ...props}: any) => <ol className="list-decimal list-inside mb-6 space-y-2 ml-4" {...props} />,
+                      h1: ({node, ...props}: any) => <h1 className="text-3xl md:text-4xl font-bold mt-12 mb-6 text-primary scroll-m-20 tracking-tight" {...props} />,
+                      h2: ({node, ...props}: any) => <h2 className="text-2xl md:text-3xl font-bold mt-10 mb-5 text-foreground border-b border-border/40 pb-2 scroll-m-20 tracking-tight" {...props} />,
+                      h3: ({node, ...props}: any) => <h3 className="text-xl md:text-2xl font-bold mt-8 mb-4 text-foreground scroll-m-20 tracking-tight" {...props} />,
+                      h4: ({node, ...props}: any) => <h4 className="text-lg md:text-xl font-bold mt-8 mb-4 text-foreground scroll-m-20 tracking-tight" {...props} />,
+                      p: ({node, ...props}: any) => <p className="mb-6 leading-7 text-muted-foreground/90" {...props} />,
+                      ul: ({node, ...props}: any) => <ul className="list-disc list-outside mb-6 space-y-2 ml-6 text-muted-foreground/90" {...props} />,
+                      ol: ({node, ...props}: any) => <ol className="list-decimal list-outside mb-6 space-y-2 ml-6 text-muted-foreground/90" {...props} />,
                       li: ({node, ...props}: any) => <li className="pl-2" {...props} />,
-                      strong: ({node, ...props}: any) => <strong className="font-bold text-primary/90" {...props} />,
+                      a: ({node, ...props}: any) => <a className="font-medium text-primary underline underline-offset-4 hover:text-primary/80 transition-colors" {...props} />,
+                      strong: ({node, ...props}: any) => <strong className="font-bold text-foreground" {...props} />,
                       em: ({node, ...props}: any) => <em className="italic text-foreground/80" {...props} />,
-                      blockquote: ({node, ...props}: any) => <blockquote className="border-l-4 border-primary/50 pl-6 italic my-8 py-2 bg-primary/5 rounded-r-lg text-muted-foreground" {...props} />,
-                      code: ({node, ...props}: any) => <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-primary" {...props} />,
-                      img: ({node, ...props}: any) => <OptimizedImage containerClassName="my-8 w-full rounded-xl shadow-lg border border-border/50" className="w-full" {...props} />,
+                      blockquote: ({node, ...props}: any) => (
+                        <blockquote className="border-l-4 border-primary/50 pl-6 italic my-8 py-4 bg-primary/5 rounded-r-lg text-muted-foreground shadow-sm" {...props} />
+                      ),
+                      code: ({node, ...props}: any) => <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-primary border border-border/50" {...props} />,
+                      pre: ({node, ...props}: any) => <pre className="mb-4 mt-6 overflow-x-auto rounded-lg border border-border/50 bg-muted/50 p-4 shadow-sm" {...props} />,
+                      hr: ({node, ...props}: any) => <hr className="my-10 border-border/60" {...props} />,
+                      table: ({node, ...props}: any) => <div className="my-6 w-full overflow-y-auto rounded-lg border border-border/50 shadow-sm"><table className="w-full border-collapse text-sm" {...props} /></div>,
+                      thead: ({node, ...props}: any) => <thead className="bg-muted/50" {...props} />,
+                      tr: ({node, ...props}: any) => <tr className="m-0 border-t border-border/50 p-0 even:bg-muted/20 hover:bg-muted/30 transition-colors" {...props} />,
+                      th: ({node, ...props}: any) => <th className="border-r border-border/50 last:border-r-0 px-4 py-3 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right text-foreground" {...props} />,
+                      td: ({node, ...props}: any) => <td className="border-r border-border/50 last:border-r-0 px-4 py-3 text-left [&[align=center]]:text-center [&[align=right]]:text-right text-muted-foreground" {...props} />,
+                      img: ({node, ...props}: any) => <OptimizedImage containerClassName="my-10 w-full rounded-xl shadow-xl border border-border/50 overflow-hidden" className="w-full hover:scale-[1.02] transition-transform duration-500" {...props} />,
                     }}
                   >
                     {course.content}
