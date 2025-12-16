@@ -29,8 +29,9 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const user = useQuery(api.users.currentUser);
   
-  // Only fetch stats if user is admin/sub_admin to avoid "Not authenticated" errors
-  const shouldFetchStats = user && (user.role === "admin" || user.role === "sub_admin");
+  // Only fetch stats if user is admin/sub_admin or the specific super admin
+  const isSuperAdmin = user?.email === "amirmoosavi9020@gmail.com";
+  const shouldFetchStats = user && (user.role === "admin" || user.role === "sub_admin" || isSuperAdmin);
   const stats = useQuery(api.admin.getDashboardStats, shouldFetchStats ? {} : "skip");
 
   // Separate Admin Login System
@@ -41,7 +42,7 @@ export default function AdminDashboard() {
   // Access Control
   if (user === undefined) return <SaffronLoader />;
   
-  if (!user || (user.role !== "admin" && user.role !== "sub_admin")) {
+  if (!user || (user.role !== "admin" && user.role !== "sub_admin" && !isSuperAdmin)) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
         <AlertTriangle className="h-16 w-16 text-destructive mb-4" />

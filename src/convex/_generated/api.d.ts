@@ -24,6 +24,7 @@ import type * as products from "../products.js";
 import type * as products_extended from "../products_extended.js";
 import type * as resetPasswordAction from "../resetPasswordAction.js";
 import type * as sendPasswordReset from "../sendPasswordReset.js";
+import type * as setAdmin from "../setAdmin.js";
 import type * as support from "../support.js";
 import type * as testing from "../testing.js";
 import type * as users from "../users.js";
@@ -51,6 +52,7 @@ declare const fullApi: ApiFromModules<{
   products_extended: typeof products_extended;
   resetPasswordAction: typeof resetPasswordAction;
   sendPasswordReset: typeof sendPasswordReset;
+  setAdmin: typeof setAdmin;
   support: typeof support;
   testing: typeof testing;
   users: typeof users;
