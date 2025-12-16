@@ -57,7 +57,7 @@ export default function Landing() {
   const scrollToSection = (sectionId: string) => {
     const section = document.getElementById(sectionId);
     if (section) {
-      const navbarHeight = 64; // h-16 = 64px
+      const navbarHeight = 100; // Adjusted for floating nav
       const targetPosition = section.offsetTop - navbarHeight;
       
       window.scrollTo({
@@ -73,8 +73,9 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between px-4 md:px-8 mx-auto">
+      <div className="fixed top-4 left-0 right-0 z-50 flex justify-center px-2 md:px-4 pointer-events-none">
+        <nav className="pointer-events-auto w-full max-w-5xl rounded-full border border-border/40 bg-background/75 backdrop-blur-xl shadow-lg supports-[backdrop-filter]:bg-background/40 transition-all duration-300">
+          <div className="flex h-16 items-center justify-between px-6 md:px-8">
           <a href="/" className="flex items-center gap-2 font-bold text-xl tracking-tighter hover:opacity-80 transition-opacity cursor-pointer">
             <Hexagon className="h-6 w-6 text-primary fill-primary/20 shrink-0" />
             <span className="hidden sm:inline">CYBER SAFFRON</span>
@@ -170,8 +171,9 @@ export default function Landing() {
               </Button>
             )}
           </div>
-        </div>
-      </nav>
+          </div>
+        </nav>
+      </div>
 
       <HeroSection onGetStarted={() => scrollToSection('products')} />
       <AboutSection />
