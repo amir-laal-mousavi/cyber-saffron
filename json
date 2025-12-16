@@ -1,9 +1,1 @@
-{
-  "file_paths": [
-    "src/components/landing/FeaturesSection.tsx",
-    "src/components/landing/ProductsSection.tsx",
-    "src/components/landing/AboutSection.tsx",
-    "src/components/landing/TrustSection.tsx"
-  ],
-  "replace_files_in_context": false
-}
+{"type":"continueWithPlanTool","plan":"1. Remove @ts-ignore directives.\n2. Improve image loading animations."}

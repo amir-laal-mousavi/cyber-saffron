@@ -6,6 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { getTierColor } from "@/lib/tiers";
 
 interface AgentHeaderProps {
   user: any;
@@ -25,15 +26,6 @@ export function AgentHeader({
   const [copiedCode, setCopiedCode] = useState(false);
   const [isGeneratingCode, setIsGeneratingCode] = useState(false);
   const generateReferralCode = useMutation(api.agents.generateReferralCode);
-
-  const getTierColor = (tier?: string) => {
-    switch (tier) {
-      case "platinum": return "bg-purple-500/10 text-purple-500 border-purple-500/20";
-      case "gold": return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20";
-      case "silver": return "bg-gray-500/10 text-gray-500 border-gray-500/20";
-      default: return "bg-orange-500/10 text-orange-500 border-orange-500/20";
-    }
-  };
 
   const handleCopyReferralCode = () => {
     if (user?.referralCode) {

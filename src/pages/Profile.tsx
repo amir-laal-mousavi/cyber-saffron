@@ -20,6 +20,7 @@ import { AgentHeader } from "@/components/profile/AgentHeader";
 import { PerformanceMetrics } from "@/components/profile/PerformanceMetrics";
 import { OrderHistory } from "@/components/profile/OrderHistory";
 import { SaffronLoader } from "@/components/SaffronLoader";
+import { getTierColor } from "@/lib/tiers";
 
 export default function Profile() {
   const navigate = useNavigate();
