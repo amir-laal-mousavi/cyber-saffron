@@ -3,6 +3,7 @@ import { Hexagon, ShoppingCart, User } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useNavigate } from "react-router";
@@ -73,107 +74,110 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
       {/* Navigation */}
-      <div className="fixed top-4 left-0 right-0 z-50 flex justify-center px-2 md:px-4 pointer-events-none">
-        <nav className="pointer-events-auto w-full max-w-6xl rounded-2xl border border-border/40 bg-background/75 backdrop-blur-xl shadow-lg supports-[backdrop-filter]:bg-background/40 transition-all duration-300">
-          <div className="flex h-16 items-center justify-between px-6 md:px-8">
-          <a href="/" className="flex items-center gap-2 font-bold text-xl tracking-tighter hover:opacity-80 transition-opacity cursor-pointer">
-            <Hexagon className="h-6 w-6 text-primary fill-primary/20 shrink-0" />
-            <span className="hidden sm:inline">CYBER SAFFRON</span>
-          </a>
-          
-          {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setMobileMenuOpen(true)}
-            aria-expanded={mobileMenuOpen}
-            aria-label="Toggle navigation menu"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="4" x2="20" y1="12" y2="12" />
-              <line x1="4" x2="20" y1="6" y2="6" />
-              <line x1="4" x2="20" y1="18" y2="18" />
-            </svg>
-          </Button>
+      {createPortal(
+        <div className="fixed top-4 left-0 right-0 z-50 flex justify-center px-2 md:px-4 pointer-events-none">
+          <nav className="pointer-events-auto w-full max-w-6xl rounded-2xl border border-border/40 bg-background/75 backdrop-blur-xl shadow-lg supports-[backdrop-filter]:bg-background/40 transition-all duration-300">
+            <div className="flex h-16 items-center justify-between px-6 md:px-8">
+            <a href="/" className="flex items-center gap-2 font-bold text-xl tracking-tighter hover:opacity-80 transition-opacity cursor-pointer">
+              <Hexagon className="h-6 w-6 text-primary fill-primary/20 shrink-0" />
+              <span className="hidden sm:inline">CYBER SAFFRON</span>
+            </a>
+            
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-expanded={mobileMenuOpen}
+              aria-label="Toggle navigation menu"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="4" x2="20" y1="12" y2="12" />
+                <line x1="4" x2="20" y1="6" y2="6" />
+                <line x1="4" x2="20" y1="18" y2="18" />
+              </svg>
+            </Button>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6 text-sm font-medium">
-            {["about", "products", "features", "trust"].map((section) => (
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-6 text-sm font-medium">
+              {["about", "products", "features", "trust"].map((section) => (
+                <a 
+                  key={section}
+                  href={`#${section}`}
+                  className={`hover:text-primary transition-colors cursor-pointer relative ${
+                    activeSection === section ? "text-primary font-semibold" : ""
+                  }`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection(section);
+                  }}
+                >
+                  {section.charAt(0).toUpperCase() + section.slice(1).replace("features", "Process").replace("products", "Collection")}
+                  {activeSection === section && (
+                    <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
+                  )}
+                </a>
+              ))}
               <a 
-                key={section}
-                href={`#${section}`}
+                href="#academy"
                 className={`hover:text-primary transition-colors cursor-pointer relative ${
-                  activeSection === section ? "text-primary font-semibold" : ""
+                  activeSection === "academy" ? "text-primary font-semibold" : ""
                 }`}
                 onClick={(e) => {
                   e.preventDefault();
-                  scrollToSection(section);
+                  scrollToSection("academy");
                 }}
               >
-                {section.charAt(0).toUpperCase() + section.slice(1).replace("features", "Process").replace("products", "Collection")}
-                {activeSection === section && (
+                Academy
+                {activeSection === "academy" && (
                   <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
                 )}
               </a>
-            ))}
-            <a 
-              href="#academy"
-              className={`hover:text-primary transition-colors cursor-pointer relative ${
-                activeSection === "academy" ? "text-primary font-semibold" : ""
-              }`}
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToSection("academy");
-              }}
-            >
-              Academy
-              {activeSection === "academy" && (
-                <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
-              )}
-            </a>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="icon"
-              className="relative"
-              onClick={() => setCartOpen(true)}
-            >
-              <ShoppingCart className="h-5 w-5" />
-              {cartItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold">
-                  {cartItemCount}
-                </span>
-              )}
-            </Button>
-            {isAuthenticated ? (
-              <div className="flex items-center gap-2">
-                <ConnectButton 
-                  showBalance={false}
-                  accountStatus="avatar"
-                  chainStatus="none"
-                />
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => navigate("/profile")}
-                  title="Profile"
-                >
-                  <User className="h-5 w-5" />
-                </Button>
-              </div>
-            ) : (
+            </div>
+            <div className="flex items-center gap-3">
               <Button
-                onClick={() => navigate("/auth")}
+                variant="outline"
+                size="icon"
+                className="relative"
+                onClick={() => setCartOpen(true)}
               >
-                Sign In
+                <ShoppingCart className="h-5 w-5" />
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold">
+                    {cartItemCount}
+                  </span>
+                )}
               </Button>
-            )}
-          </div>
-          </div>
-        </nav>
-      </div>
+              {isAuthenticated ? (
+                <div className="flex items-center gap-2">
+                  <ConnectButton 
+                    showBalance={false}
+                    accountStatus="avatar"
+                    chainStatus="none"
+                  />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => navigate("/profile")}
+                    title="Profile"
+                  >
+                    <User className="h-5 w-5" />
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  onClick={() => navigate("/auth")}
+                >
+                  Sign In
+                </Button>
+              )}
+            </div>
+            </div>
+          </nav>
+        </div>,
+        document.body
+      )}
 
       <HeroSection onGetStarted={() => scrollToSection('products')} />
       <AboutSection />
