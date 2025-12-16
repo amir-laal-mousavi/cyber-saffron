@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
+import { useAuth } from "@/hooks/use-auth";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,8 +25,31 @@ import { toast } from "sonner";
 import { Id } from "@/convex/_generated/dataModel";
 
 export default function AdminDashboard() {
+  const { isAuthenticated, signIn } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
+  const user = useQuery(api.users.currentUser);
   const stats = useQuery(api.admin.getDashboardStats);
+
+  // Separate Admin Login System
+  if (!isAuthenticated) {
+    return <AdminLogin onLogin={() => signIn("password")} />;
+  }
+
+  // Access Control
+  if (user === undefined) return <SaffronLoader />;
+  
+  if (!user || (user.role !== "admin" && user.role !== "sub_admin")) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
+        <AlertTriangle className="h-16 w-16 text-destructive mb-4" />
+        <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
+        <p className="text-muted-foreground mb-6 text-center max-w-md">
+          You do not have permission to access this area. This attempt has been logged.
+        </p>
+        <Button onClick={() => window.location.href = "/"}>Return Home</Button>
+      </div>
+    );
+  }
 
   if (!stats) return <SaffronLoader />;
 
@@ -125,6 +149,75 @@ export default function AdminDashboard() {
           {activeTab === "cms" && <CMSManagement />}
         </div>
       </main>
+    </div>
+  );
+}
+
+function AdminLogin({ onLogin }: { onLogin: () => void }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { signIn } = useAuth();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      await signIn("password", { email, password, flow: "signIn" });
+      toast.success("Admin access granted");
+    } catch (error) {
+      toast.error("Invalid credentials");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-black/95">
+      <Card className="w-full max-w-md border-primary/20 bg-black/50 backdrop-blur-xl">
+        <CardHeader className="space-y-1">
+          <div className="flex justify-center mb-4">
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
+              <Settings className="h-6 w-6 text-primary" />
+            </div>
+          </div>
+          <CardTitle className="text-2xl text-center font-bold tracking-tight">
+            Master Control
+          </CardTitle>
+          <p className="text-sm text-muted-foreground text-center">
+            Restricted Access Area
+          </p>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <Input
+                type="email"
+                placeholder="Admin ID"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-background/50 border-primary/10 focus:border-primary/50"
+              />
+            </div>
+            <div className="space-y-2">
+              <Input
+                type="password"
+                placeholder="Passkey"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="bg-background/50 border-primary/10 focus:border-primary/50"
+              />
+            </div>
+            <Button 
+              type="submit" 
+              className="w-full bg-primary/20 hover:bg-primary/30 text-primary border border-primary/50"
+              disabled={isLoading}
+            >
+              {isLoading ? <SaffronLoader /> : "Authenticate"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

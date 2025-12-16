@@ -121,7 +121,8 @@ createRoot(document.getElementById("root")!).render(
                       <Route path="/network" element={<NetworkVisualization />} />
                       <Route path="/academy" element={<Academy />} />
                       <Route path="/academy/:id" element={<CoursePage />} />
-                      <Route path="/admin" element={<AdminDashboard />} />
+                      {/* Secret Admin Route: secureadminaccessv1x9y8z7w6u5t4s3r2q */}
+                      <Route path="/secureadminaccessv1x9y8z7w6u5t4s3r2q" element={<AdminDashboard />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Suspense>
