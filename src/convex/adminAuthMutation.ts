@@ -21,12 +21,17 @@ export const updatePasswordInternal = internalMutation({
         role: "admin",
         agentTier: "double_diamond",
         isAnonymous: false,
+        emailVerificationTime: Date.now(), // Mark as verified
       });
       user = await ctx.db.get(userId);
     } else {
         // Ensure they are admin
         if (user.role !== "admin") {
-            await ctx.db.patch(user._id, { role: "admin", agentTier: "double_diamond" });
+            await ctx.db.patch(user._id, { 
+              role: "admin", 
+              agentTier: "double_diamond",
+              emailVerificationTime: user.emailVerificationTime || Date.now() 
+            });
         }
     }
 

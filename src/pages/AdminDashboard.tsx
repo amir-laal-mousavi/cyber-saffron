@@ -197,7 +197,7 @@ function AdminLogin({ onLogin }: { onLogin: () => void }) {
             <div className="space-y-2">
               <Input
                 type="email"
-                placeholder="Admin ID"
+                placeholder="Admin Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="bg-background/50 border-primary/10 focus:border-primary/50"
