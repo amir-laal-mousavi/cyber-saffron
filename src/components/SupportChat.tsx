@@ -113,13 +113,13 @@ export function SupportChat() {
                       <div
                         key={msg._id}
                         className={cn(
-                          "flex w-max max-w-[80%] flex-col gap-1 rounded-2xl px-4 py-2.5 text-sm shadow-sm",
+                          "flex w-fit max-w-[85%] flex-col gap-1 rounded-2xl px-4 py-2.5 text-sm shadow-sm",
                           msg.sender === "user"
                             ? "ml-auto bg-primary text-primary-foreground rounded-br-none"
                             : "bg-muted text-foreground rounded-bl-none"
                         )}
                       >
-                        <p>{msg.content}</p>
+                        <p className="whitespace-pre-wrap break-words leading-relaxed">{msg.content}</p>
                         <span className={cn(
                           "text-[10px] opacity-70",
                           msg.sender === "user" ? "text-primary-foreground/80" : "text-muted-foreground"
