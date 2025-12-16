@@ -74,7 +74,7 @@ export default function Landing() {
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
       {/* Navigation */}
       <div className="fixed top-4 left-0 right-0 z-50 flex justify-center px-2 md:px-4 pointer-events-none">
-        <nav className="pointer-events-auto w-full max-w-5xl rounded-full border border-border/40 bg-background/75 backdrop-blur-xl shadow-lg supports-[backdrop-filter]:bg-background/40 transition-all duration-300">
+        <nav className="pointer-events-auto w-full max-w-6xl rounded-2xl border border-border/40 bg-background/75 backdrop-blur-xl shadow-lg supports-[backdrop-filter]:bg-background/40 transition-all duration-300">
           <div className="flex h-16 items-center justify-between px-6 md:px-8">
           <a href="/" className="flex items-center gap-2 font-bold text-xl tracking-tighter hover:opacity-80 transition-opacity cursor-pointer">
             <Hexagon className="h-6 w-6 text-primary fill-primary/20 shrink-0" />
