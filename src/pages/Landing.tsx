@@ -32,7 +32,7 @@ export default function Landing() {
   // ScrollSpy: Track active section
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["about", "products", "features", "trust"];
+      const sections = ["about", "products", "features", "academy", "trust"];
       const scrollPosition = window.scrollY + 100; // Offset for better detection
 
       for (const sectionId of sections) {
@@ -117,14 +117,19 @@ export default function Landing() {
               </a>
             ))}
             <a 
-              href="/academy"
-              className="hover:text-primary transition-colors cursor-pointer"
+              href="#academy"
+              className={`hover:text-primary transition-colors cursor-pointer relative ${
+                activeSection === "academy" ? "text-primary font-semibold" : ""
+              }`}
               onClick={(e) => {
                 e.preventDefault();
-                navigate("/academy");
+                scrollToSection("academy");
               }}
             >
               Academy
+              {activeSection === "academy" && (
+                <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
+              )}
             </a>
           </div>
           <div className="flex items-center gap-3">
@@ -220,11 +225,13 @@ export default function Landing() {
               </a>
             ))}
             <a 
-              href="/academy"
-              className="text-lg font-medium hover:text-primary transition-colors cursor-pointer py-2"
+              href="#academy"
+              className={`text-lg font-medium hover:text-primary transition-colors cursor-pointer py-2 ${
+                activeSection === "academy" ? "text-primary font-semibold" : ""
+              }`}
               onClick={(e) => {
                 e.preventDefault();
-                navigate("/academy");
+                scrollToSection("academy");
                 setMobileMenuOpen(false);
               }}
             >

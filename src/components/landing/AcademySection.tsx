@@ -8,7 +8,7 @@ export function AcademySection() {
   const navigate = useNavigate();
 
   return (
-    <section className="py-24 bg-muted/30 relative overflow-hidden">
+    <section id="academy" className="py-24 bg-muted/30 relative overflow-hidden">
       {/* Background elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-3xl" />
