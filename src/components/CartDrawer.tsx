@@ -5,10 +5,8 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
-import { useState, Suspense, lazy } from "react";
-
-// Lazy load CheckoutDialog to avoid circular dependencies or load issues
-const CheckoutDialog = lazy(() => import("./CheckoutDialog").then(module => ({ default: module.CheckoutDialog })));
+import { useState } from "react";
+import { CheckoutDialog } from "./CheckoutDialog";
 
 interface CartDrawerProps {
   open: boolean;
@@ -176,15 +174,13 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
         </SheetContent>
       </Sheet>
 
-      <Suspense fallback={null}>
-        <CheckoutDialog
-          open={checkoutOpen}
-          onOpenChange={setCheckoutOpen}
-          cartItems={cart?.items || []}
-          totalEth={totalEth}
-          totalUsd={total}
-        />
-      </Suspense>
+      <CheckoutDialog
+        open={checkoutOpen}
+        onOpenChange={setCheckoutOpen}
+        cartItems={cart?.items || []}
+        totalEth={totalEth}
+        totalUsd={total}
+      />
     </>
   );
 }
