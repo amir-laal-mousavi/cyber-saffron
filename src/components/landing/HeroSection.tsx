@@ -9,7 +9,7 @@ interface HeroSectionProps {
 
 export function HeroSection({ onGetStarted }: HeroSectionProps) {
   return (
-    <section className="relative overflow-hidden h-[80vh] min-h-[600px] flex items-center justify-center">
+    <section className="relative overflow-hidden h-screen min-h-[600px] flex items-center justify-center">
       {/* Full Width/Height Saffron Background Image */}
       <motion.div 
         className="absolute inset-0 w-full h-full"

@@ -101,7 +101,7 @@ export default function Landing() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-6 text-sm font-medium">
-              {["about", "products", "features", "trust"].map((section) => (
+              {["about", "products", "features", "academy", "trust"].map((section) => (
                 <a 
                   key={section}
                   href={`#${section}`}
@@ -119,21 +119,6 @@ export default function Landing() {
                   )}
                 </a>
               ))}
-              <a 
-                href="#academy"
-                className={`hover:text-primary transition-colors cursor-pointer relative ${
-                  activeSection === "academy" ? "text-primary font-semibold" : ""
-                }`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection("academy");
-                }}
-              >
-                Academy
-                {activeSection === "academy" && (
-                  <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
-                )}
-              </a>
             </div>
             <div className="flex items-center gap-3">
               <Button
@@ -214,7 +199,7 @@ export default function Landing() {
             </SheetTitle>
           </SheetHeader>
           <div className="flex flex-col gap-4 mt-8">
-            {["about", "products", "features", "trust"].map((section) => (
+            {["about", "products", "features", "academy", "trust"].map((section) => (
               <a 
                 key={section}
                 href={`#${section}`}
@@ -230,19 +215,6 @@ export default function Landing() {
                 {section.charAt(0).toUpperCase() + section.slice(1).replace("features", "Process").replace("products", "Collection")}
               </a>
             ))}
-            <a 
-              href="#academy"
-              className={`text-lg font-medium hover:text-primary transition-colors cursor-pointer py-2 ${
-                activeSection === "academy" ? "text-primary font-semibold" : ""
-              }`}
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToSection("academy");
-                setMobileMenuOpen(false);
-              }}
-            >
-              Academy
-            </a>
             <div className="pt-4 border-t border-border">
               {isAuthenticated ? (
                 <Button
