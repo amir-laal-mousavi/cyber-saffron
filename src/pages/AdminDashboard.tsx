@@ -28,7 +28,10 @@ export default function AdminDashboard() {
   const { isAuthenticated, signIn } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   const user = useQuery(api.users.currentUser);
-  const stats = useQuery(api.admin.getDashboardStats);
+  
+  // Only fetch stats if user is admin/sub_admin to avoid "Not authenticated" errors
+  const shouldFetchStats = user && (user.role === "admin" || user.role === "sub_admin");
+  const stats = useQuery(api.admin.getDashboardStats, shouldFetchStats ? {} : "skip");
 
   // Separate Admin Login System
   if (!isAuthenticated) {
