@@ -21,14 +21,26 @@ export type AgentTier = Infer<typeof agentTierValidator>;
 // default user roles
 export const ROLES = {
   ADMIN: "admin",
+  SUB_ADMIN: "sub_admin",
   AGENT: "agent",
+  USER: "user",
 } as const;
 
 export const roleValidator = v.union(
   v.literal(ROLES.ADMIN),
+  v.literal(ROLES.SUB_ADMIN),
   v.literal(ROLES.AGENT),
+  v.literal(ROLES.USER),
 );
 export type Role = Infer<typeof roleValidator>;
+
+// Admin Permissions Validator
+export const permissionsValidator = v.object({
+  users: v.array(v.string()), // "view", "edit", "delete", "ban"
+  products: v.array(v.string()), // "view", "edit", "create", "delete"
+  financials: v.array(v.string()), // "view", "approve", "reject"
+  cms: v.array(v.string()), // "view", "edit", "publish"
+});
 
 const schema = defineSchema(
   {
@@ -45,6 +57,9 @@ const schema = defineSchema(
 
       role: v.optional(roleValidator), // role of the user. do not remove
       
+      // Admin Permissions (for sub_admins)
+      permissions: v.optional(permissionsValidator),
+
       // Agent-specific fields
       referralCode: v.optional(v.string()), // Unique referral code for this agent
       referredBy: v.optional(v.id("users")), // ID of the agent who referred this user
@@ -60,10 +75,12 @@ const schema = defineSchema(
         country: v.string(),
         postalCode: v.string(),
       })),
+      isBanned: v.optional(v.boolean()),
     })
       .index("email", ["email"]) // index for the email. do not remove or modify
       .index("by_referral_code", ["referralCode"])
-      .index("by_referrer", ["referredBy"]),
+      .index("by_referrer", ["referredBy"])
+      .index("by_role", ["role"]),
 
     products: defineTable({
       name: v.string(),
@@ -74,6 +91,7 @@ const schema = defineSchema(
       tier: v.string(),
       image: v.string(),
       features: v.array(v.string()),
+      stock: v.optional(v.number()),
     }),
 
     carts: defineTable({
@@ -116,7 +134,7 @@ const schema = defineSchema(
       amount: v.number(), // Commission amount in USD
       percentage: v.number(), // Commission percentage applied
       tier: agentTierValidator, // Tier at time of commission
-      status: v.string(), // "pending", "paid"
+      status: v.string(), // "pending", "paid", "rejected"
       paidAt: v.optional(v.number()),
     })
       .index("by_agent", ["agentId"])
@@ -172,6 +190,14 @@ const schema = defineSchema(
       read: v.boolean(),
       createdAt: v.number(),
     }).index("by_ticket", ["ticketId"]),
+
+    // CMS Content
+    cmsContent: defineTable({
+      section: v.string(), // "hero", "about", "loading", "navigation"
+      content: v.any(), // Flexible JSON content
+      updatedBy: v.optional(v.id("users")),
+      updatedAt: v.number(),
+    }).index("by_section", ["section"]),
   },
   {
     schemaValidation: false,

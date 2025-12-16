@@ -27,6 +27,7 @@ const NetworkVisualization = lazy(() => import("./pages/NetworkVisualization.tsx
 const Academy = lazy(() => import("./pages/Academy.tsx"));
 const CoursePage = lazy(() => import("./pages/CoursePage.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard.tsx"));
 
 // Route loading with saffron flower animation
 function RouteLoading() {
@@ -120,6 +121,7 @@ createRoot(document.getElementById("root")!).render(
                       <Route path="/network" element={<NetworkVisualization />} />
                       <Route path="/academy" element={<Academy />} />
                       <Route path="/academy/:id" element={<CoursePage />} />
+                      <Route path="/admin" element={<AdminDashboard />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Suspense>
