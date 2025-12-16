@@ -10,6 +10,8 @@
 
 import type * as academy from "../academy.js";
 import type * as admin from "../admin.js";
+import type * as adminAuthAction from "../adminAuthAction.js";
+import type * as adminAuthMutation from "../adminAuthMutation.js";
 import type * as agents from "../agents.js";
 import type * as auth from "../auth.js";
 import type * as auth_emailOtp from "../auth/emailOtp.js";
@@ -38,6 +40,8 @@ import type {
 declare const fullApi: ApiFromModules<{
   academy: typeof academy;
   admin: typeof admin;
+  adminAuthAction: typeof adminAuthAction;
+  adminAuthMutation: typeof adminAuthMutation;
   agents: typeof agents;
   auth: typeof auth;
   "auth/emailOtp": typeof auth_emailOtp;
