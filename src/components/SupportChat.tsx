@@ -100,8 +100,8 @@ export function SupportChat() {
               </CardHeader>
               
               <CardContent className="flex-1 p-0 overflow-hidden relative">
-                <ScrollArea className="h-full p-4">
-                  <div className="flex flex-col gap-4 pb-4">
+                <ScrollArea className="h-full px-4">
+                  <div className="flex flex-col gap-3 py-2 min-h-full justify-end">
                     {!activeTicket && messages?.length === 0 && (
                       <div className="text-center text-muted-foreground text-sm py-8 px-4">
                         <p>Welcome to Cyber Saffron!</p>
