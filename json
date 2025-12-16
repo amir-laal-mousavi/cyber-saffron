@@ -1,1 +1,113 @@
-{"command": "npx convex run fixAdmin:resetAdminUser"}
+{
+  "project_overview": {
+    "name": "Cyber Saffron",
+    "description": "Web3 platform for premium saffron with blockchain provenance and tiered referral network.",
+    "tech_stack": {
+      "frontend": "React (Vite), Tailwind CSS, Shadcn UI, Framer Motion",
+      "backend": "Convex (Serverless Functions, Realtime Database)",
+      "web3": "Wagmi, RainbowKit, Viem (Ethereum Integration)",
+      "authentication": "Convex Auth (Custom Email/Password + Referral Logic)"
+    }
+  },
+  "core_systems": {
+    "authentication_flow": {
+      "status": "Implemented",
+      "features": [
+        "Email Existence Check",
+        "Sign Up (Requires Valid Referral Code)",
+        "Sign In (Email/Password)",
+        "Password Reset (6-digit OTP via Email)",
+        "Admin Authentication (Separate Flow)"
+      ]
+    },
+    "ecommerce_engine": {
+      "status": "Implemented",
+      "features": [
+        "Product Catalog (Dynamic Fetching)",
+        "Cart System (Add, Remove, Update Quantity, Persistent)",
+        "Checkout Dialog (Shipping Info Collection)",
+        "Crypto Payment Integration (ETH Transactions)",
+        "Order Management (Creation, Tracking)"
+      ]
+    },
+    "agent_network_system": {
+      "status": "Implemented",
+      "features": [
+        "Tiered Commission Structure (Levels 0-7)",
+        "Referral Code Generation & Validation",
+        "Network Visualization (Tree View)",
+        "Performance Metrics (Sales, Recruits)",
+        "Commission Tracking (Pending/Paid)"
+      ]
+    }
+  },
+  "modules_and_features": {
+    "landing_page": {
+      "path": "/",
+      "components": [
+        "Hero Section (CMS Managed)",
+        "About Section",
+        "Products Grid (Real-time Pricing)",
+        "Features/Process Steps",
+        "Academy Teaser",
+        "Trust/Certifications",
+        "Cart Drawer"
+      ]
+    },
+    "user_dashboard": {
+      "path": "/profile",
+      "features": [
+        "Agent Header (Profile Info, Tier Badge)",
+        "Referral Tools (Copy Link, QR Code)",
+        "Performance Metrics",
+        "Order History"
+      ]
+    },
+    "admin_dashboard": {
+      "path": "/secureadminaccessv1x9y8z7w6u5t4s3r2q",
+      "sub_modules": [
+        {
+          "name": "Overview",
+          "details": "Revenue stats, user counts, commission liability"
+        },
+        {
+          "name": "User Management",
+          "details": "Search, list users, ban/unban functionality"
+        },
+        {
+          "name": "Product Management",
+          "details": "Update prices (USD), stock levels"
+        },
+        {
+          "name": "Financial Management",
+          "details": "Approve/Reject pending commissions"
+        },
+        {
+          "name": "CMS Management",
+          "details": "Edit landing page text (Hero headline)"
+        }
+      ]
+    },
+    "academy": {
+      "path": "/academy",
+      "features": ["Course Listing", "Course Content View"]
+    },
+    "support": {
+      "component": "SupportChat",
+      "features": ["Real-time messaging widget"]
+    }
+  },
+  "database_schema": {
+    "tables": [
+      "users (Roles, Tiers, Auth Data)",
+      "products (Inventory, Pricing)",
+      "carts (Session-based items)",
+      "orders (Transaction Hash, Shipping)",
+      "commissions (Amount, Status, Agent Link)",
+      "agentNetwork (Hierarchy Relationships)",
+      "courses (Educational Content)",
+      "cmsContent (Dynamic Text)",
+      "authAccounts (Password Hashes)"
+    ]
+  }
+}
