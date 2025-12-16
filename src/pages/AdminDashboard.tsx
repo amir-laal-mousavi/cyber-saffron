@@ -30,30 +30,31 @@ export default function AdminDashboard() {
   const user = useQuery(api.users.currentUser);
   
   // Only fetch stats if user is admin/sub_admin or the specific super admin
-  const isSuperAdmin = user?.email === "amirmoosavi9020@gmail.com";
-  const shouldFetchStats = user && (user.role === "admin" || user.role === "sub_admin" || isSuperAdmin);
-  const stats = useQuery(api.admin.getDashboardStats, shouldFetchStats ? {} : "skip");
+  // const isSuperAdmin = user?.email === "amirmoosavi9020@gmail.com";
+  // const shouldFetchStats = user && (user.role === "admin" || user.role === "sub_admin" || isSuperAdmin);
+  // TEMPORARY: Always fetch stats
+  const stats = useQuery(api.admin.getDashboardStats, {});
 
   // Separate Admin Login System
-  if (!isAuthenticated) {
-    return <AdminLogin onLogin={() => signIn("password")} />;
-  }
+  // if (!isAuthenticated) {
+  //   return <AdminLogin onLogin={() => signIn("password")} />;
+  // }
 
   // Access Control
-  if (user === undefined) return <SaffronLoader />;
+  // if (user === undefined) return <SaffronLoader />;
   
-  if (!user || (user.role !== "admin" && user.role !== "sub_admin" && !isSuperAdmin)) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
-        <AlertTriangle className="h-16 w-16 text-destructive mb-4" />
-        <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
-        <p className="text-muted-foreground mb-6 text-center max-w-md">
-          You do not have permission to access this area. This attempt has been logged.
-        </p>
-        <Button onClick={() => window.location.href = "/"}>Return Home</Button>
-      </div>
-    );
-  }
+  // if (!user || (user.role !== "admin" && user.role !== "sub_admin" && !isSuperAdmin)) {
+  //   return (
+  //     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
+  //       <AlertTriangle className="h-16 w-16 text-destructive mb-4" />
+  //       <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
+  //       <p className="text-muted-foreground mb-6 text-center max-w-md">
+  //         You do not have permission to access this area. This attempt has been logged.
+  //       </p>
+  //       <Button onClick={() => window.location.href = "/"}>Return Home</Button>
+  //     </div>
+  //   );
+  // }
 
   if (!stats) return <SaffronLoader />;
 

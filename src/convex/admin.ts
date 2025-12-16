@@ -5,6 +5,20 @@ import { ROLES } from "./schema";
 
 // Helper to check admin permissions
 async function checkAdminAccess(ctx: QueryCtx | MutationCtx, requiredModule: string, requiredAction: string) {
+  // TEMPORARY: Disable auth checks for development
+  return { 
+    role: "admin", 
+    email: "dev@admin.com", 
+    _id: "dev_admin_id",
+    permissions: {
+      users: ["view", "edit", "delete", "ban"],
+      products: ["view", "edit", "create", "delete"],
+      financials: ["view", "approve", "reject"],
+      cms: ["view", "edit", "publish"]
+    }
+  };
+
+  /*
   const userId = await getAuthUserId(ctx);
   if (!userId) throw new Error("Not authenticated");
 
@@ -24,6 +38,7 @@ async function checkAdminAccess(ctx: QueryCtx | MutationCtx, requiredModule: str
   }
 
   throw new Error("Unauthorized access");
+  */
 }
 
 // --- Dashboard Stats ---
