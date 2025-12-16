@@ -4,17 +4,25 @@ import { Infer, v } from "convex/values";
 
 // Agent tier system for commission structure
 export const AGENT_TIERS = {
+  MEMBER: "member",
   BRONZE: "bronze",
   SILVER: "silver",
   GOLD: "gold",
   PLATINUM: "platinum",
+  DIAMOND: "diamond",
+  DOUBLE_DIAMOND: "double_diamond",
+  TRIPLE_DIAMOND: "triple_diamond",
 } as const;
 
 export const agentTierValidator = v.union(
+  v.literal(AGENT_TIERS.MEMBER),
   v.literal(AGENT_TIERS.BRONZE),
   v.literal(AGENT_TIERS.SILVER),
   v.literal(AGENT_TIERS.GOLD),
   v.literal(AGENT_TIERS.PLATINUM),
+  v.literal(AGENT_TIERS.DIAMOND),
+  v.literal(AGENT_TIERS.DOUBLE_DIAMOND),
+  v.literal(AGENT_TIERS.TRIPLE_DIAMOND),
 );
 export type AgentTier = Infer<typeof agentTierValidator>;
 

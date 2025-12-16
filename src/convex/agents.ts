@@ -13,22 +13,30 @@ function createRandomReferralCode(): string {
 }
 
 // Get agent tier based on total sales
-function calculateAgentTier(totalSales: number): "bronze" | "silver" | "gold" | "platinum" {
+function calculateAgentTier(totalSales: number): string {
+  if (totalSales >= 500000) return "triple_diamond";
+  if (totalSales >= 250000) return "double_diamond";
+  if (totalSales >= 100000) return "diamond";
   if (totalSales >= 50000) return "platinum";
   if (totalSales >= 20000) return "gold";
   if (totalSales >= 5000) return "silver";
-  return "bronze";
+  if (totalSales >= 1000) return "bronze";
+  return "member";
 }
 
 // Get commission percentage based on tier
-export function getCommissionRate(tier: "bronze" | "silver" | "gold" | "platinum"): number {
-  const rates = {
-    bronze: 0.10,    // 10%
-    silver: 0.15,    // 15%
-    gold: 0.20,      // 20%
-    platinum: 0.25,  // 25%
+export function getCommissionRate(tier: string): number {
+  const rates: Record<string, number> = {
+    member: 0.05,          // 5%
+    bronze: 0.10,          // 10%
+    silver: 0.15,          // 15%
+    gold: 0.20,            // 20%
+    platinum: 0.25,        // 25%
+    diamond: 0.30,         // 30%
+    double_diamond: 0.35,  // 35%
+    triple_diamond: 0.40,  // 40%
   };
-  return rates[tier];
+  return rates[tier] || 0.05;
 }
 
 // Verify referral code exists
@@ -157,7 +165,7 @@ export const generateReferralCode = mutation({
     await ctx.db.patch(userId, {
       role: user.role || "agent",
       referralCode: newReferralCode,
-      agentTier: user.agentTier || "bronze",
+      agentTier: user.agentTier || "member",
       totalSales: user.totalSales || 0,
       totalCommission: user.totalCommission || 0,
       pendingPayout: user.pendingPayout || 0,
@@ -300,10 +308,10 @@ export const seedTestNetwork = mutation({
       await ctx.db.patch(userId, {
         role: "agent",
         referralCode: code,
-        agentTier: "platinum",
-        totalSales: 15000,
-        totalCommission: 3750,
-        pendingPayout: 500,
+        agentTier: "triple_diamond",
+        totalSales: 600000,
+        totalCommission: 240000,
+        pendingPayout: 5000,
       });
 
       // Create network entry for root
@@ -318,9 +326,9 @@ export const seedTestNetwork = mutation({
 
     // Create test sub-agents (Level 1)
     const level1Agents = [
-      { name: "John Smith", tier: "gold" as const, sales: 8500 },
-      { name: "Sarah Lee", tier: "silver" as const, sales: 4200 },
-      { name: "Mike Johnson", tier: "gold" as const, sales: 7800 },
+      { name: "John Smith", tier: "gold" as const, sales: 25000 },
+      { name: "Sarah Lee", tier: "silver" as const, sales: 6000 },
+      { name: "Mike Johnson", tier: "diamond" as const, sales: 120000 },
     ];
 
     for (const agentData of level1Agents) {
@@ -365,7 +373,7 @@ export const seedTestNetwork = mutation({
           for (let i = 0; i < level2Count; i++) {
             const l2Code = createRandomReferralCode();
             const l2Sales = 1000 + Math.floor(Math.random() * 2000);
-            const l2Tier = l2Sales > 1500 ? "silver" : "bronze";
+            const l2Tier = (l2Sales > 1500 ? "bronze" : "member") as "bronze" | "member";
             
             const l2AgentId = await ctx.db.insert("users", {
               name: level2Names[i],
@@ -373,9 +381,9 @@ export const seedTestNetwork = mutation({
               role: "agent",
               referralCode: l2Code,
               referredBy: agentId,
-              agentTier: l2Tier as "bronze" | "silver",
+              agentTier: l2Tier,
               totalSales: l2Sales,
-              totalCommission: l2Sales * getCommissionRate(l2Tier as "bronze" | "silver"),
+              totalCommission: l2Sales * getCommissionRate(l2Tier),
               pendingPayout: 0,
             });
 
