@@ -13,6 +13,7 @@ import { AboutSection } from "@/components/landing/AboutSection";
 import { ProductsSection } from "@/components/landing/ProductsSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { TrustSection } from "@/components/landing/TrustSection";
+import { AcademySection } from "@/components/landing/AcademySection";
 
 export default function Landing() {
   const products = useQuery(api.products.list);
@@ -171,6 +172,7 @@ export default function Landing() {
       <AboutSection />
       <ProductsSection products={products} />
       <FeaturesSection />
+      <AcademySection />
       <TrustSection />
 
       {/* Footer */}
