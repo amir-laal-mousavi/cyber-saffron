@@ -34,7 +34,8 @@ export default function Landing() {
   useEffect(() => {
     const handleScroll = () => {
       const sections = ["about", "products", "features", "academy", "trust"];
-      const scrollPosition = window.scrollY + 100; // Offset for better detection
+      // Adjusted offset for better detection with the new scroll position
+      const scrollPosition = window.scrollY + 150; 
 
       for (const sectionId of sections) {
         const section = document.getElementById(sectionId);
@@ -58,7 +59,8 @@ export default function Landing() {
   const scrollToSection = (sectionId: string) => {
     const section = document.getElementById(sectionId);
     if (section) {
-      const navbarHeight = 100; // Adjusted for floating nav
+      // Reduced navbarHeight to 80px to scroll further down and hide the previous section
+      const navbarHeight = 80; 
       const targetPosition = section.offsetTop - navbarHeight;
       
       window.scrollTo({
