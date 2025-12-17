@@ -6,8 +6,10 @@ import { useState, useEffect } from "react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useAuth } from "@/hooks/use-auth";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
-import { Mail, ArrowRight, Loader2, KeyRound } from "lucide-react";
+import { Mail, ArrowRight, Loader2, KeyRound, Users } from "lucide-react";
 
 export default function AuthPage() {
   const { signIn } = useAuthActions();
@@ -15,11 +17,16 @@ export default function AuthPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   
-  const [step, setStep] = useState<"email" | "otp">("email");
+  const [step, setStep] = useState<"email" | "otp" | "referral">("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [referralCode, setReferralCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isNewUser, setIsNewUser] = useState(false);
+
+  const checkEmailExists = useQuery(api.users.checkEmailExists, email ? { email } : "skip");
+  const verifyReferralCode = useQuery(api.agents.verifyReferralCode, referralCode ? { code: referralCode } : "skip");
+  const initializeAgent = useMutation(api.agents.initializeAgent);
 
   // Auto-fill referral code from URL
   useEffect(() => {
@@ -37,11 +44,6 @@ export default function AuthPage() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      // Save referral code if present
-      if (referralCode) {
-        sessionStorage.setItem("pendingReferralCode", referralCode);
-      }
-      
       await signIn("email", { email });
       setStep("otp");
       toast.success("Verification code sent", {
@@ -60,17 +62,69 @@ export default function AuthPage() {
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    
     try {
-      const formData = new FormData();
-      formData.append("email", email);
-      formData.append("code", code);
-      await signIn("email", formData);
-      // Redirect handled by useEffect
+      // Check if user exists before verifying OTP
+      const userExists = checkEmailExists?.exists;
+      
+      if (userExists) {
+        // Existing user - sign in directly
+        const formData = new FormData();
+        formData.append("email", email);
+        formData.append("code", code);
+        await signIn("email", formData);
+        toast.success("Welcome back!");
+        // Redirect handled by useEffect
+      } else {
+        // New user - proceed to referral step
+        setIsNewUser(true);
+        setStep("referral");
+        toast.info("New account detected", {
+          description: "Please enter a referral code to continue"
+        });
+      }
     } catch (error) {
       console.error(error);
       toast.error("Invalid code", {
         description: "Please check the code and try again"
       });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCompleteSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!referralCode) {
+      toast.error("Referral code is required");
+      return;
+    }
+
+    if (!verifyReferralCode?.valid) {
+      toast.error("Invalid referral code");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Complete the sign-in with OTP
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("code", code);
+      await signIn("email", formData);
+      
+      // Store referral code for AgentInitializer to process
+      sessionStorage.setItem("pendingReferralCode", referralCode);
+      
+      toast.success("Account created successfully!");
+      // Redirect handled by useEffect
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to create account", {
+        description: "Please try again"
+      });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -85,17 +139,18 @@ export default function AuthPage() {
              </div>
           </div>
           <CardTitle className="text-2xl font-bold">
-            {step === "email" ? "Welcome Back" : "Verify Email"}
+            {step === "email" && "Welcome"}
+            {step === "otp" && "Verify Email"}
+            {step === "referral" && "Join the Network"}
           </CardTitle>
           <CardDescription>
-            {step === "email" 
-              ? "Sign in or create an account with your email" 
-              : `Enter the 6-digit code sent to ${email}`
-            }
+            {step === "email" && "Sign in or create an account with your email"}
+            {step === "otp" && `Enter the 6-digit code sent to ${email}`}
+            {step === "referral" && "Enter a referral code to complete your registration"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {step === "email" ? (
+          {step === "email" && (
             <form onSubmit={handleSendCode} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
@@ -113,19 +168,6 @@ export default function AuthPage() {
                   />
                 </div>
               </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="referral">Referral Code (Optional)</Label>
-                <Input
-                  id="referral"
-                  type="text"
-                  placeholder="REFERRAL-CODE"
-                  value={referralCode}
-                  onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
-                  disabled={isLoading}
-                  className="font-mono uppercase"
-                />
-              </div>
 
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
@@ -141,7 +183,9 @@ export default function AuthPage() {
                 )}
               </Button>
             </form>
-          ) : (
+          )}
+
+          {step === "otp" && (
             <form onSubmit={handleVerifyCode} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="code">Verification Code</Label>
@@ -168,7 +212,7 @@ export default function AuthPage() {
                   </>
                 ) : (
                   <>
-                    Verify & Sign In
+                    Verify & Continue
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </>
                 )}
@@ -181,6 +225,60 @@ export default function AuthPage() {
                 disabled={isLoading}
               >
                 Change Email
+              </Button>
+            </form>
+          )}
+
+          {step === "referral" && (
+            <form onSubmit={handleCompleteSignup} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="referral">Referral Code *</Label>
+                <div className="relative">
+                  <Users className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="referral"
+                    type="text"
+                    placeholder="REFERRAL-CODE"
+                    value={referralCode}
+                    onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                    required
+                    disabled={isLoading}
+                    className="pl-9 font-mono uppercase"
+                  />
+                </div>
+                {referralCode && verifyReferralCode && (
+                  <p className={`text-sm ${verifyReferralCode.valid ? 'text-green-500' : 'text-destructive'}`}>
+                    {verifyReferralCode.valid 
+                      ? `✓ Valid code from ${verifyReferralCode.agentName}` 
+                      : '✗ Invalid referral code'}
+                  </p>
+                )}
+              </div>
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={isLoading || !referralCode || !verifyReferralCode?.valid}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating Account...
+                  </>
+                ) : (
+                  <>
+                    Complete Registration
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
+              <Button 
+                type="button" 
+                variant="ghost" 
+                className="w-full" 
+                onClick={() => setStep("otp")}
+                disabled={isLoading}
+              >
+                Back
               </Button>
             </form>
           )}
