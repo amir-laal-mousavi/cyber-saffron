@@ -13,7 +13,7 @@ import { Mail, ArrowRight, Loader2, KeyRound, Users } from "lucide-react";
 
 export default function AuthPage() {
   const { signIn } = useAuthActions();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   
@@ -22,10 +22,8 @@ export default function AuthPage() {
   const [code, setCode] = useState("");
   const [referralCode, setReferralCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isNewUser, setIsNewUser] = useState(false);
 
-  const checkEmailExists = useQuery(api.users.checkEmailExists, email ? { email } : "skip");
-  const verifyReferralCode = useQuery(api.agents.verifyReferralCode, referralCode ? { code: referralCode } : "skip");
+  const verifyReferralCode = useQuery(api.agents.verifyReferralCode, referralCode.length >= 3 ? { code: referralCode } : "skip");
   const initializeAgent = useMutation(api.agents.initializeAgent);
 
   // Auto-fill referral code from URL
@@ -34,11 +32,18 @@ export default function AuthPage() {
     if (ref) setReferralCode(ref);
   }, [searchParams]);
 
+  // Handle navigation based on auth state and user data
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/");
+    if (!isAuthLoading && isAuthenticated && user) {
+      // If user is admin or has a referrer, they are good to go
+      if (user.role === "admin" || user.referredBy) {
+        navigate("/");
+      } else {
+        // User is logged in but needs a referral code (New User)
+        setStep("referral");
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthLoading, isAuthenticated, user, navigate]);
 
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,31 +69,22 @@ export default function AuthPage() {
     setIsLoading(true);
     
     try {
-      // Check if user exists before verifying OTP
-      const userExists = checkEmailExists?.exists;
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("code", code);
       
-      if (userExists) {
-        // Existing user - sign in directly
-        const formData = new FormData();
-        formData.append("email", email);
-        formData.append("code", code);
-        await signIn("email", formData);
-        toast.success("Welcome back!");
-        // Redirect handled by useEffect
-      } else {
-        // New user - proceed to referral step
-        setIsNewUser(true);
-        setStep("referral");
-        toast.info("New account detected", {
-          description: "Please enter a referral code to continue"
-        });
-      }
+      // This will verify OTP and log the user in (creating them if they don't exist)
+      await signIn("email", formData);
+      
+      toast.success("Verified successfully");
+      // The useEffect above will handle the redirection or moving to referral step
+      // based on whether the user has a referrer set.
+      
     } catch (error) {
       console.error(error);
       toast.error("Invalid code", {
         description: "Please check the code and try again"
       });
-    } finally {
       setIsLoading(false);
     }
   };
@@ -108,26 +104,32 @@ export default function AuthPage() {
 
     setIsLoading(true);
     try {
-      // Complete the sign-in with OTP
-      const formData = new FormData();
-      formData.append("email", email);
-      formData.append("code", code);
-      await signIn("email", formData);
+      const result = await initializeAgent({ referralCode });
       
-      // Store referral code for AgentInitializer to process
-      sessionStorage.setItem("pendingReferralCode", referralCode);
-      
-      toast.success("Account created successfully!");
-      // Redirect handled by useEffect
+      if (result.success) {
+        toast.success("Welcome to Cyber Saffron!");
+        navigate("/");
+      } else {
+        toast.error(result.message || "Failed to initialize account");
+      }
     } catch (error) {
       console.error(error);
-      toast.error("Failed to create account", {
+      toast.error("Failed to complete registration", {
         description: "Please try again"
       });
     } finally {
       setIsLoading(false);
     }
   };
+
+  // If we are in the referral step (authenticated but no referrer), show loading if user data isn't ready
+  if (isAuthenticated && !user && step === "referral") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -246,7 +248,7 @@ export default function AuthPage() {
                     className="pl-9 font-mono uppercase"
                   />
                 </div>
-                {referralCode && verifyReferralCode && (
+                {referralCode.length >= 3 && verifyReferralCode && (
                   <p className={`text-sm ${verifyReferralCode.valid ? 'text-green-500' : 'text-destructive'}`}>
                     {verifyReferralCode.valid 
                       ? `✓ Valid code from ${verifyReferralCode.agentName}` 
@@ -262,7 +264,7 @@ export default function AuthPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating Account...
+                    Finalizing...
                   </>
                 ) : (
                   <>
@@ -270,15 +272,6 @@ export default function AuthPage() {
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </>
                 )}
-              </Button>
-              <Button 
-                type="button" 
-                variant="ghost" 
-                className="w-full" 
-                onClick={() => setStep("otp")}
-                disabled={isLoading}
-              >
-                Back
               </Button>
             </form>
           )}
